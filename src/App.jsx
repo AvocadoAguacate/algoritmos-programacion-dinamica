@@ -1,13 +1,17 @@
 import './App.css'
 import React from "react";
-import {Button} from "@nextui-org/react";
-
+import { useNavigate } from 'react-router-dom';
+import { NextUIProvider } from '@nextui-org/react'
+import Router from './routes/Router';
+import NavBar from './components/NavBar';
 function App() {
+  const navigate = useNavigate();
 
   return (
-    <Button color="primary">
-    Test
-    </Button>
+    <NextUIProvider navigate={navigate}>
+      <NavBar/>
+      <Router/>
+    </NextUIProvider>
   )
 }
 
