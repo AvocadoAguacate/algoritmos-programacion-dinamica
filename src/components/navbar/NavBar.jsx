@@ -5,7 +5,7 @@ function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
     <div className='bg-indigo-200 w-full h-full p-0 space-y-0'>
-    <Navbar maxWidth='full' height="0" >
+    <Navbar maxWidth='full' >
       <NavbarBrand>
         <Logo/>
         <p className="font-bold text-inherit">Algoritmos de programación dinámica</p>
