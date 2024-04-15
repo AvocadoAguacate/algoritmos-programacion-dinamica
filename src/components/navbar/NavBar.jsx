@@ -1,13 +1,13 @@
 import {React, useState} from 'react'
 import {Navbar, NavbarBrand, NavbarContent, NavbarItem, NavbarMenuToggle, NavbarMenu, NavbarMenuItem, Link, Button} from "@nextui-org/react";
-import logo from '../assets/backpack.svg'
-
+import {Logo} from "./Logo.jsx";
 function NavBar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   return (
-    <Navbar>
+    <div className='bg-indigo-200 w-full h-full p-0 space-y-0'>
+    <Navbar maxWidth='full' height="0" >
       <NavbarBrand>
-        <img src='../assets/backpack.svg'/>
+        <Logo/>
         <p className="font-bold text-inherit">Algoritmos de programación dinámica</p>
       </NavbarBrand>
       <NavbarContent justify="end">
@@ -23,6 +23,7 @@ function NavBar() {
         </NavbarItem>
       </NavbarContent>
     </Navbar>
+    </div>
   );
 }
 
