@@ -3,7 +3,6 @@ import {Card, CardHeader, CardBody, CardFooter, Divider, Link, Image} from "@nex
 import History from '../../components/algorithms/History';
 
 function Floyd() {
-  // TODO: Grafo y Tabla con basis-full si el grafo es suficientemente grande
   return (
     <div>
       <div className='flex flex-wrap justify-start place-content-evenly'>
@@ -17,17 +16,22 @@ function Floyd() {
           Configuración
         </CardHeader>
       </Card>
-      <Card className='basis-2/6'>
+      <Card className='basis-3/6'>
         <CardHeader>
           Grafo
         </CardHeader>
       </Card>
-      <Card className='basis-4/6'>
+      <Card className='basis-3/6'>
         <CardHeader>
-          Tabla
+          Tabla P
         </CardHeader>
       </Card>
       <Card className='basis-full'>
+        <CardHeader>
+          Tablas D
+        </CardHeader>
+      </Card>
+      <Card className='basis-full invisible' >
         <CardHeader>
           Resultado
         </CardHeader>
