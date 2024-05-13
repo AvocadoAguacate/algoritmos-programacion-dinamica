@@ -1,9 +1,11 @@
-import React from 'react'
+import React from "react";
 
 function ReplacementScheduling() {
   return (
-    <div>ReplacementScheduling</div>
-  )
+    <div className="min-h-screen bg-black text-white flex justify-center items-center">
+      <h1 className="text-3xl font-bold">Replacement Scheduling</h1>
+    </div>
+  );
 }
 
-export default ReplacementScheduling
+export default ReplacementScheduling;
