@@ -16,7 +16,7 @@ function NavBar() {
   return (
     <div className="w-full h-full p-0 space-y-0">
       <Navbar
-        className="bg-gradient-to-b from-lime-800 to-lime-500"
+        className="w-full bg-gradient-to-b from-lime-800 to-lime-500"
         maxWidth="full"
       >
         <NavbarBrand>
