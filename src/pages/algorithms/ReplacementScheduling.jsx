@@ -32,7 +32,7 @@ export default function ReplacementScheduling() {
 
   // Columnas de la tabla de mantenimiento.
 
-  const columns = [
+  const columnsMant = [
     { key: "year", label: "Año" },
     { key: "maintenance", label: "Mantenimiento" },
     { key: "sales", label: "Venta" },
@@ -103,6 +103,186 @@ export default function ReplacementScheduling() {
   };
 
   // ================= MANEJO DEL BACKEND =================    //
+
+  // Estado para almacenar los costos calculados
+
+  const [differences, setDifference] = useState([]);
+
+  // Estado para almacenar las filas de la tabla de planes obtenidos.
+
+  const [tableRowsObtnPlans, setTableRowsObtnPlans] = useState([]);
+
+  // Columnas de la tabla de planes obtenidos.
+
+  const columnsObtPlans = [
+    { key: "t", label: "T" },
+    { key: "Gt", label: "G(T)" },
+    { key: "proximo", label: "Próximo" },
+  ];
+
+  const [tableRowsObtimPlans, setTableRowsObtimPlans] = useState([]);
+
+  // Columnas de la tabla de planes obtimos.
+
+  const columnsObtimPlans = [{ key: "optimos", label: "Planes Óptimos" }];
+
+  // Función para calcular los costos.
+
+  const calculateCosts = () => {
+    let t = 0;
+    let x = 1;
+    let difference = x - t;
+
+    let calculatedCosts = [];
+
+    while (x <= vida_util) {
+      let Mantenimiento = 0;
+      for (let i = t; i <= x; i++) {
+        let row = tableRows.find((item) => item.year === i.toString());
+        if (row) {
+          Mantenimiento += parseInt(row.maintenance);
+        }
+      }
+
+      let Venta = 0;
+      let ventaRow = tableRows.find(
+        (item) => item.year === difference.toString()
+      );
+      if (ventaRow) {
+        Venta = parseInt(ventaRow.sales);
+      }
+
+      let Compra = parseInt(initialCost);
+      let Ctx = Compra + Mantenimiento - Venta;
+
+      calculatedCosts.push({ difference, Ctx });
+
+      x++;
+      difference = x - t;
+    }
+
+    setDifference(calculatedCosts);
+  };
+
+  // Función para consultar los costos.
+
+  const consultarCostos = (t, x) => {
+    let diffValue = x - t;
+    const result = differences.find((item) => item.difference === diffValue);
+    return result ? result.Ctx : null;
+  };
+
+  // Función para calcular los costos mínimos.
+
+  const costosMinimos = () => {
+    let tablaPlanes = [];
+    let valoresGt = [];
+    let t = parseInt(projectTime);
+    let gt = 0;
+    let proximo = "";
+
+    const findGtByT = (x) => {
+      const result = valoresGt.find((item) => item.valor_t === x);
+      return result ? result.valor_Gt : null;
+    };
+
+    while (t >= 0) {
+      if (t === parseInt(projectTime)) {
+        gt = 0;
+        valoresGt.push({ valor_t: t, valor_Gt: gt });
+        tablaPlanes.push({ t: t, Gt: gt, proximo: proximo });
+      } else {
+        let t_buscado = t;
+        let x_buscado = t + 1;
+        let valores_previos = [];
+        while (x_buscado <= parseInt(projectTime)) {
+          let diferencia = x_buscado - t_buscado;
+          if (diferencia <= parseInt(vida_util)) {
+            let Ctx = consultarCostos(t_buscado, x_buscado);
+            let Gx = findGtByT(x_buscado);
+            let costo_previo = Ctx + Gx;
+            valores_previos.push({ x: x_buscado, costo: costo_previo });
+          }
+          x_buscado++;
+        }
+        let costoMinimo = Infinity;
+        valores_previos.forEach((valor) => {
+          if (valor.costo < costoMinimo) {
+            costoMinimo = valor.costo;
+          }
+        });
+        gt = costoMinimo;
+        valoresGt.push({ valor_t: t, valor_Gt: gt });
+        valores_previos.forEach((valor) => {
+          if (valor.costo === gt) {
+            if (proximo === "") {
+              proximo += valor.x.toString();
+            } else {
+              proximo += ", " + valor.x.toString();
+            }
+          }
+        });
+        tablaPlanes.push({ t: t, Gt: gt, proximo: proximo });
+        proximo = "";
+      }
+      t--;
+    }
+    tablaPlanes.reverse();
+    setTableRowsObtnPlans(tablaPlanes);
+  };
+
+  function findPaths(start, end, adjacencyList, currentPath, allPaths) {
+    // Añadir el nodo actual al camino actual
+    currentPath.push(start);
+
+    // Si hemos llegado al nodo final, añadir el camino actual a la lista de caminos
+    if (start === end) {
+      allPaths.push([...currentPath]);
+    } else {
+      // Explorar los nodos adyacentes al nodo actual
+      for (const next of adjacencyList[start]) {
+        findPaths(next, end, adjacencyList, currentPath, allPaths);
+      }
+    }
+
+    // Eliminar el último nodo para retroceder y explorar otros caminos
+    currentPath.pop();
+  }
+
+  function generateOptimalPlans(tableRowsObtnPlans) {
+    // Crear un mapa de adjacencia basado en los valores de "T" y "próximo"
+    const adjacencyList = {};
+
+    tableRowsObtnPlans.forEach((row) => {
+      const t = row.t;
+      const nextNodes = row.proximo
+        .split(",")
+        .map((num) => parseInt(num.trim()));
+      adjacencyList[t] = nextNodes;
+    });
+
+    // Encontrar el primer y último valor de "T" en la tabla
+    const start = Math.min(...tableRowsObtnPlans.map((row) => row.t));
+    const end = Math.max(...tableRowsObtnPlans.map((row) => row.t));
+
+    // Almacenar todos los caminos encontrados
+    const allPaths = [];
+
+    // Llamar a la función findPaths para encontrar todos los caminos posibles
+    findPaths(start, end, adjacencyList, [], allPaths);
+
+    // Retornar los caminos óptimos encontrados
+    return allPaths.map((path) => path.join("-"));
+  }
+
+  // Función para realizar los cálculos.
+
+  const handleCalculate = () => {
+    calculateCosts();
+    costosMinimos();
+    const optimalPlans = generateOptimalPlans(tableRowsObtnPlans);
+    setTableRowsObtimPlans(optimalPlans.map((plan) => ({ optimos: plan })));
+  };
 
   // ================= CÓDIGO HTML =================    //
 
@@ -221,14 +401,14 @@ export default function ReplacementScheduling() {
           className="text-black w-auto mx-8 mt-6"
         >
           <TableHeader>
-            {columns.map((column) => (
+            {columnsMant.map((column) => (
               <TableColumn key={column.key}>{column.label}</TableColumn>
             ))}
           </TableHeader>
           <TableBody>
             {tableRows.map((row, index) => (
               <TableRow key={index}>
-                {columns.map((column) => (
+                {columnsMant.map((column) => (
                   <TableCell key={column.key}>{row[column.key]}</TableCell>
                 ))}
               </TableRow>
@@ -236,17 +416,6 @@ export default function ReplacementScheduling() {
           </TableBody>
         </Table>
       </div>
-
-      {/* Botón para realizar los cálculos. */}
-
-      <Button
-        id="btn_calcular"
-        radius="full"
-        className="bg-gradient-to-b from-purple-600 to-blue-600 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-auto mx-8 mt-8"
-        //onClick={}
-      >
-        Hacer la calculación...
-      </Button>
 
       {/* Sección de resultados. */}
 
@@ -263,14 +432,22 @@ export default function ReplacementScheduling() {
           <Table
             id="tabla_planes_obtenidos"
             aria-label="Tabla de Planes Obtenidos"
-            className="text-black w-auto mx-8 mt-4"
+            className="text-black w-auto mx-8 mt-6"
           >
             <TableHeader>
-              <TableColumn>T</TableColumn>
-              <TableColumn>G(T)</TableColumn>
-              <TableColumn>Próximo</TableColumn>
+              {columnsObtPlans.map((column) => (
+                <TableColumn key={column.key}>{column.label}</TableColumn>
+              ))}
             </TableHeader>
-            <TableBody></TableBody>
+            <TableBody>
+              {tableRowsObtnPlans.map((row, index) => (
+                <TableRow key={index}>
+                  {columnsObtPlans.map((column) => (
+                    <TableCell key={column.key}>{row[column.key]}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
           </Table>
         </div>
 
@@ -281,16 +458,47 @@ export default function ReplacementScheduling() {
             Planes óptimos
           </h1>
           <Table
-            id="tabla_planes_optimos"
-            aria-label="Tabla de Planes Óptimos"
-            className="text-black w-auto mx-8 mt-4"
+            id="tabla_planes_obtimos"
+            aria-label="Tabla de Planes Obtimos"
+            className="text-black w-auto mx-8 mt-6"
           >
             <TableHeader>
-              <TableColumn>Planes Óptimos</TableColumn>
+              {columnsObtimPlans.map((column) => (
+                <TableColumn key={column.key}>{column.label}</TableColumn>
+              ))}
             </TableHeader>
-            <TableBody></TableBody>
+            <TableBody>
+              {tableRowsObtimPlans.map((row, index) => (
+                <TableRow key={index}>
+                  {columnsObtimPlans.map((column) => (
+                    <TableCell key={column.key}>{row[column.key]}</TableCell>
+                  ))}
+                </TableRow>
+              ))}
+            </TableBody>
           </Table>
         </div>
+      </div>
+
+      {/* Botón para cargar datos y calcular. */}
+
+      <div id="botones_data" className="flex mb-6">
+        <Button
+          id="btn_cargar"
+          radius="full"
+          className="bg-gradient-to-b from-yellow-600 to-amber-300 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
+          //onClick={handleLoadData}
+        >
+          Cargar datos
+        </Button>
+        <Button
+          id="btn_calcular"
+          radius="full"
+          className="bg-gradient-to-b from-purple-600 to-blue-600 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
+          onClick={handleCalculate}
+        >
+          Hacer la calculación...
+        </Button>
       </div>
     </div>
   );
