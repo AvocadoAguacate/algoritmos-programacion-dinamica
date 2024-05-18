@@ -412,7 +412,7 @@ function MatrixMultiplication() {
           >
             <h1
               id="titulo_inputs_iniciales"
-              className="font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+              className="my-10 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
             >
               Tabla M
             </h1>
@@ -426,7 +426,7 @@ function MatrixMultiplication() {
           >
             <h1
               id="titulo_inputs_iniciales"
-              className="font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+              className="my-10 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
             >
               Tabla P
             </h1>
@@ -441,13 +441,14 @@ function MatrixMultiplication() {
         >
           <h1
             id="titulo_inputs_iniciales"
-            className="mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+            className="mx-8 my-10 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
           >
-            Resultados
+            La multiplicación óptima es:
           </h1>
-          <div id="resultados" className="bg-white text-black mt-4 mb-8">
+          <h3 className="mb-20 mt-4 font-mono text-2xl font-extrabold dark:text-white tracking-wider text-red-400">
             {resultado}
-          </div>
+          </h3>
+          <h1 className="mb-20 text-black"></h1>
         </div>
       </div>
     </div>
