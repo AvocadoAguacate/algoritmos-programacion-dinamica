@@ -323,7 +323,7 @@ function MatrixMultiplication() {
   return (
     <div
       id="contenedor"
-      className="h-auto w-full flex flex-col bg-black text-white"
+      className="min-h-screen w-full flex flex-col bg-black text-white"
     >
       <div id="seccion_datos_iniciales">
         <h1
@@ -448,7 +448,6 @@ function MatrixMultiplication() {
           <h3 className="mb-20 mt-4 font-mono text-2xl font-extrabold dark:text-white tracking-wider text-red-400">
             {resultado}
           </h3>
-          <h1 className="mb-20 text-black"></h1>
         </div>
       </div>
     </div>
