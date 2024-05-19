@@ -31,11 +31,6 @@ function NavBar() {
               Algoritmos
             </Link>
           </NavbarItem>
-          <NavbarItem isActive>
-            <Link className="text-white" href="/backpack" aria-current="page">
-              Contacto
-            </Link>
-          </NavbarItem>
         </NavbarContent>
       </Navbar>
     </div>

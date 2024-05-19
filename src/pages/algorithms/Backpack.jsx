@@ -17,10 +17,11 @@ function Backpack() {
   const [object, setObject] = useState("Objeto #" + counter);
   const [cost, setCost] = useState("");
   const [value, setValue] = useState("");
-  const [available, setAvailable] = useState("");
+  const [available, setAvailable] = useState("Infinito");
   const [check, setCheck] = useState("");
   const [error, setError] = useState("");
   const [error2, setError2] = useState("");
+  const [result, setResult] = useState(false);
 
   const columnsObj = [
     { key: "object", label: "Objeto" },
@@ -38,14 +39,10 @@ function Backpack() {
       setCheck("");
       setError("Todos los campos deben estar completos antes de continuar.");
       return;
-    } else {
-      setError("");
-      setCheck("Capacidad máxima establecida.");
     }
 
-    // Establecimiento de valores iniciales.
-
-    // Mensaje de confirmación.
+    setError("");
+    setCheck("Capacidad máxima establecida.");
   };
 
   const handleAddRow = () => {
@@ -79,9 +76,25 @@ function Backpack() {
     setObject("Objeto #" + (counter + 1));
     setCost("");
     setValue("");
-    setAvailable("");
+    setAvailable("Infinito");
     setCounter(counter + 1);
     setError2("");
+  };
+
+  function generateMatrix(N, M) {
+    // Crear una matriz de NxN con todas las celdas inicializadas al valor dado (por defecto 0)
+    const matrix = Array.from({ length: N }, () => Array(M).fill(0));
+    return matrix;
+  }
+
+  const handleCalculate = () => {
+    // Aquí va el algoritmo Unbounded Knapsack.
+
+    console.log(tableRows);
+    console.log(tableRows.length);
+    console.log(generateMatrix(10, 3));
+
+    setResult(true);
   };
 
   return (
@@ -130,11 +143,6 @@ function Backpack() {
           id="inpt_object_data"
           className="mt-6 flex w-full flex-wrap md:flex-nowrap items-center"
         >
-          {/* <div className="ml-8 w-full">
-            <h1 className="font-mono text-3xl font-extrabold dark:text-white tracking-wider text-white text-center">
-              {object}
-            </h1>
-      </div> */}
           <Input
             id="inp_nombre_objeto"
             className="w-full mx-8"
@@ -143,18 +151,18 @@ function Backpack() {
             onChange={(e) => setObject(e.target.value)}
           />
           <Input
-            id="inp_costo_objeto"
-            className="w-full mx-8"
-            label="Costo del objeto"
-            value={cost}
-            onChange={(e) => setCost(e.target.value)}
-          />
-          <Input
             id="np_valor_objeto"
             className="w-full mx-8"
             label="Valor del objeto"
             value={value}
             onChange={(e) => setValue(e.target.value)}
+          />
+          <Input
+            id="inp_costo_objeto"
+            className="w-full mx-8"
+            label="Costo del objeto"
+            value={cost}
+            onChange={(e) => setCost(e.target.value)}
           />
           <Input
             id="np_cantidad_disponible_objeto"
@@ -213,12 +221,23 @@ function Backpack() {
             id="btn_calcular"
             radius="full"
             className="bg-gradient-to-b from-purple-600 to-blue-600 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
-            //onClick={handleCalculate}
+            onClick={handleCalculate}
           >
             Hacer la calculación...
           </Button>
         </div>
       </div>
+      {result && (
+        <div id="resultados" className="mx-8 mt-6">
+          <h1
+            id="titulo_resultados"
+            className="text-center mt-4 mb-8 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+          >
+            Resultados
+          </h1>
+          {/* Aquí va la tabla de resultados */}
+        </div>
+      )}
     </div>
   );
 }

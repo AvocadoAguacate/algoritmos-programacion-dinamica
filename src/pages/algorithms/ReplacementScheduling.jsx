@@ -29,6 +29,9 @@ export default function ReplacementScheduling() {
   const [initialCost, setInitialCost] = useState("");
   const [projectTime, setProjectTime] = useState("");
   const [vida_util, setVida_Util] = useState("");
+  const [check, setCheck] = useState("");
+  const [error, setError] = useState("");
+  const [error2, setError2] = useState("");
 
   // Columnas de la tabla de mantenimiento.
 
@@ -50,9 +53,8 @@ export default function ReplacementScheduling() {
       projectTime.trim() === "" ||
       vida_util.trim() === ""
     ) {
-      alert(
-        "A ver pendejo!!! Me completa todos los campos!!! No me haga ponerme de pie!!!"
-      );
+      setCheck("");
+      setError("Todos los campos deben estar completos antes de continuar.");
       return;
     }
 
@@ -62,9 +64,8 @@ export default function ReplacementScheduling() {
     setProjectTime(projectTime);
     setVida_Util(vida_util);
 
-    // Mensaje de confirmación.
-
-    alert("Valores establecidos... Buen trabajo!!!");
+    setError("");
+    setCheck("Datos iniciales establecidos.");
   };
 
   // Función para manejar la inserción de datos en la tabla principal
@@ -77,9 +78,7 @@ export default function ReplacementScheduling() {
       maintenance.trim() === "" ||
       sales.trim() === ""
     ) {
-      alert(
-        "A ver pendejo!!! Me completa todos los campos!!! No me haga ponerme de pie!!!"
-      );
+      setError2("Todos los campos deben estar completos antes de continuar.");
       return;
     }
 
@@ -100,6 +99,7 @@ export default function ReplacementScheduling() {
     setYear("");
     setMaintenance("");
     setSales("");
+    setError2("");
   };
 
   // ================= MANEJO DEL BACKEND =================    //
@@ -278,6 +278,29 @@ export default function ReplacementScheduling() {
   // Función para realizar los cálculos.
 
   const handleCalculate = () => {
+    if (
+      initialCost.trim() === "" ||
+      projectTime.trim() === "" ||
+      vida_util.trim() === ""
+    ) {
+      setCheck("");
+      setError("Todos los campos deben estar completos antes de continuar.");
+
+      if (
+        year.trim() === "" ||
+        maintenance.trim() === "" ||
+        sales.trim() === ""
+      ) {
+        setError2("Todos los campos deben estar completos antes de continuar.");
+        return;
+      }
+
+      return;
+    }
+
+    setError("");
+    setError2("");
+
     calculateCosts();
     costosMinimos();
     const optimalPlans = generateOptimalPlans(tableRowsObtnPlans);
@@ -337,6 +360,12 @@ export default function ReplacementScheduling() {
             Fijar
           </Button>
         </div>
+        {check && (
+          <p className="mx-8 mt-8 text-lime-500 font-mono text-lg">{check}</p>
+        )}
+        {error && (
+          <p className="mx-8 mt-8 text-red-500 font-mono text-lg">{error}</p>
+        )}
       </div>
 
       {/* Sección de datos de mantenimiento y reventa. */}
@@ -386,6 +415,9 @@ export default function ReplacementScheduling() {
             + Agregar
           </Button>
         </div>
+        {error2 && (
+          <p className="mx-8 mt-8 text-red-500 font-mono text-lg">{error2}</p>
+        )}
 
         {/* Tabla de mantenimiento y reventa. */}
 
