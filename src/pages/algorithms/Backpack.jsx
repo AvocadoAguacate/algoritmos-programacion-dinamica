@@ -17,17 +17,22 @@ function Backpack() {
   const [object, setObject] = useState("Objeto #" + counter);
   const [cost, setCost] = useState("");
   const [value, setValue] = useState("");
-  const [available, setAvailable] = useState("Infinito");
   const [check, setCheck] = useState("");
   const [error, setError] = useState("");
   const [error2, setError2] = useState("");
   const [result, setResult] = useState(false);
+  const [mode, setMode] = useState(false);
+  const [modeMessage, setModeMessage] = useState("");
+  const [resultado_optimo, setResultado_Optimo] = useState(
+    "No hay un resultado aún..."
+  );
+
+  const [matriz, setMatriz] = useState([]); // Estado para almacenar la matriz
 
   const columnsObj = [
-    { key: "object", label: "Objeto" },
-    { key: "cost", label: "Costo" },
-    { key: "value", label: "Valor" },
-    { key: "available", label: "Cantidad Disponible" },
+    { key: "nombre", label: "Objeto" },
+    { key: "valor", label: "Valor" },
+    { key: "costo", label: "Costo" },
   ];
 
   const handleSetValues = () => {
@@ -53,7 +58,7 @@ function Backpack() {
       return;
     }
 
-    if (cost === "" || value === "" || available === "") {
+    if (cost === "" || value === "") {
       setError2("Todos los campos deben estar completos antes de continuar.");
       return;
     }
@@ -61,10 +66,9 @@ function Backpack() {
     // Creación de una nueva fila con los valores de los inputs.
 
     const newRow = {
-      object: object,
-      cost: cost,
-      value: value,
-      available: available,
+      nombre: object,
+      valor: value,
+      costo: cost,
     };
 
     // Agregación de la nueva fila al estado de filas de la tabla principal.
@@ -76,7 +80,6 @@ function Backpack() {
     setObject("Objeto #" + (counter + 1));
     setCost("");
     setValue("");
-    setAvailable("Infinito");
     setCounter(counter + 1);
     setError2("");
   };
@@ -84,21 +87,304 @@ function Backpack() {
   function generateMatrix(N, M) {
     // Crear una matriz de NxN con todas las celdas inicializadas al valor dado (por defecto 0)
     const matrix = Array.from({ length: N }, () => Array(M).fill(0));
+
+    let currentValue = 0; // Iniciar con el valor 0
+
+    // Rellenar la matriz con valores secuenciales
+    for (let i = 0; i < N; i++) {
+      for (let j = 0; j < M; j++) {
+        matrix[i][j] = currentValue;
+        currentValue++;
+      }
+    }
     return matrix;
   }
 
-  const handleCalculate = () => {
+  function bounded() {
+    setMode(true);
+    setModeMessage("Modo Bounded activado.");
+  }
+
+  function unbounded() {
+    setMode(false);
+    setModeMessage("Modo Unbounded activado.");
+  }
+
+  function invertirElementos(str) {
+    // Eliminar la coma final y dividir el string en partes
+    let elementos = str.trim().replace(/,$/, "").split(", ");
+
+    // Invertir el orden de los elementos
+    let elementosInvertidos = elementos.reverse();
+
+    // Crear el nuevo string con los elementos invertidos
+    let resultado = "Me llevo " + elementosInvertidos.join(", ");
+
+    return resultado;
+  }
+
+  function calculate_Unbounded() {
     // Aquí va el algoritmo Unbounded Knapsack.
 
-    console.log(tableRows);
-    console.log(tableRows.length);
-    console.log(generateMatrix(10, 3));
+    let capacidad = parseInt(capacity);
+
+    //console.log(tableRows);
+    //console.log(tableRows.length);
+    let matriz = generateMatrix(capacidad + 1, tableRows.length);
+    //console.log(matriz);
+
+    for (let columna = 0; columna < tableRows.length; columna++) {
+      // Recolección de datos del objeto.
+
+      let objeto = tableRows[columna];
+      //console.log(objeto);
+      let nombre = objeto.nombre;
+      //console.log(nombre);
+      let valor = parseInt(objeto.valor);
+      //console.log(valor);
+      let costo = parseInt(objeto.costo);
+      //console.log(costo);
+
+      // Inicio del análisis.
+
+      let capacidad_actual = 0;
+      let valor_alcanzado = 0;
+      for (let fila = 0; fila < capacidad + 1; fila++) {
+        //console.log(matriz[fila][columna]);
+
+        let color_actual = "rojo";
+        let cantidad_actual = 0;
+
+        if (columna === 0) {
+          // Análisis de la primera columna.
+
+          if (capacidad_actual < costo) {
+            // Si el primer objeto no cabe.
+            matriz[fila][columna] = {
+              nombre: nombre,
+              valor: valor_alcanzado,
+              costo: costo,
+              color: color_actual,
+              cantidad: cantidad_actual,
+            };
+          } else {
+            // Si el primer objeto cabe.
+            let color_actual = "verde";
+            let cantidad_alcanzada = Math.floor(capacidad_actual / costo);
+            //console.log("Cantidad alcanzada: " + cantidad_alcanzada);
+
+            matriz[fila][columna] = {
+              nombre: nombre,
+              valor: valor * cantidad_alcanzada,
+              costo: costo,
+              color: color_actual,
+              cantidad: cantidad_alcanzada,
+            };
+          }
+        } else {
+          // QUITAR EL IF, DEJAR SOLO ELSE
+          // Análisis de las siguientes columnas.
+
+          if (capacidad_actual < costo) {
+            // Si el primer objeto no cabe.
+            matriz[fila][columna] = {
+              nombre: nombre,
+              valor: matriz[fila][columna - 1].valor,
+              costo: costo,
+              color: "rojo",
+              cantidad: 0,
+            };
+          } else {
+            // Si el primer objeto cabe.
+            //console.log("VOY POR LA CAPACIDAD ACTUAL: " + capacidad_actual);
+            let cantidad_maxima_por_capacidad = Math.floor(
+              capacidad_actual / costo
+            );
+            //console.log("Cantidad máxima por capacidad: " + cantidad_maxima_por_capacidad);
+            //console.log("");
+            let valores_temporales = [];
+            for (let i = 1; i <= cantidad_maxima_por_capacidad; i++) {
+              cantidad_actual = i;
+
+              //console.log("Qué pasa si me llevo " + i + " objeto(s)?");
+              let valor_restante = capacidad_actual - i * costo;
+              //console.log("Capacidad restante: " + valor_restante);
+
+              let valor_consultado = matriz[valor_restante][columna - 1].valor;
+              //console.log("Valor consultado: " + valor_consultado);
+
+              valor_alcanzado = valor_consultado + i * valor;
+              //console.log("Valor alcanzado: " + valor_alcanzado);
+
+              valores_temporales.push({ valor: valor_alcanzado, cantidad: i });
+            }
+
+            // Encontrar el objeto con el valor más alto
+            let valor_maximo = valores_temporales.reduce(
+              (max, obj) => {
+                return obj.valor > max.valor ? obj : max;
+              },
+              { valor: -Infinity }
+            );
+
+            //console.log("El valor máximo es: ", valor_maximo);
+
+            let valor_anterio = matriz[capacidad_actual][columna - 1].valor;
+            //console.log("Valor anterior: " + valor_anterio);
+
+            if (valor_maximo.valor > valor_anterio) {
+              matriz[fila][columna] = {
+                nombre: nombre,
+                valor: valor_maximo.valor,
+                costo: costo,
+                color: "verde",
+                cantidad: valor_maximo.cantidad,
+              };
+            } else {
+              matriz[fila][columna] = {
+                nombre: nombre,
+                valor: valor_anterio,
+                costo: costo,
+                color: "rojo",
+                cantidad: 0,
+              };
+            }
+          }
+        }
+        capacidad_actual++;
+        //console.log("");
+      }
+    }
+
+    // FOR DE REVISIÓN DE COLUMNA ESPECÍFICA.
+
+    /*for (let fila = 0; fila < capacidad + 1; fila++) {
+      console.log(matriz[fila][2]);
+    }*/
 
     setResult(true);
+
+    return matriz;
+  }
+
+  const renderizarTabla = (matriz, modo) => {
+    if (modo === 1) {
+      // Modo Bounded
+    } else {
+      // Modo Unbounded
+      return (
+        <div className="flex justify-center bg-black">
+          <table className="border-collapse table-fixed">
+            <thead>
+              <tr>
+                <th className="border border-white w-12 h-12 font-bold "></th>
+                {matriz[0].map((objeto, index) => (
+                  <th
+                    key={index}
+                    className="border border-white w-36 h-12  font-bold text-white"
+                  >
+                    {objeto.nombre}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {matriz.map((fila, i) => (
+                <tr key={i}>
+                  <td className="border border-white w-12 h-12 font-bold text-center text-white">
+                    {i}
+                  </td>
+                  {fila.map((objeto, j) => (
+                    <td
+                      key={j}
+                      className={`border border-white w-12 h-12 text-center ${
+                        objeto.color === "rojo" ? "bg-red-400" : "bg-lime-400"
+                      }`}
+                    >
+                      <div>{objeto.valor}</div>
+                      <div className="text-xs">x = {objeto.cantidad}</div>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }
+  };
+
+  const handleCalculate = () => {
+    let matriz = [];
+    let resultado = "";
+
+    if (mode) {
+      //calculate_Bounded();
+      console.log("Bounded");
+    } else {
+      // ALGORITMO UNBOUNDED
+
+      matriz = calculate_Unbounded();
+
+      let fila = capacity;
+      let columna = tableRows.length - 1;
+
+      for (let i = 0; i < tableRows.length; i++) {
+        let coordenada = matriz[fila][columna];
+        //console.log(coordenada);
+        //console.log("Fila: " + fila + " Columna: " + columna);
+        if (coordenada.color === "verde") {
+          resultado += coordenada.cantidad + " " + coordenada.nombre + ", ";
+          //console.log("Cantidad: " + coordenada.cantidad);
+          //console.log("Costo: " + coordenada.costo);
+          let valor_restado =
+            parseInt(coordenada.cantidad) * parseInt(coordenada.costo);
+          //console.log("Valor restado: " + valor_restado);
+          fila -= valor_restado;
+          columna--;
+        } else {
+          //console.log(coordenada);
+          resultado += coordenada.cantidad + " " + coordenada.nombre + ", ";
+          columna--;
+        }
+      }
+      console.log(matriz);
+    }
+
+    setMatriz(matriz);
+    setResultado_Optimo(invertirElementos(resultado));
+    
   };
 
   return (
     <div className="min-h-screen w-full flex flex-col bg-black text-white">
+      <h1
+        id="titulo_input_capacidad_mochila"
+        className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+      >
+        Elija el modo del algoritmo.
+      </h1>
+      <div id="botones_data" className="flex mb-6">
+        <Button
+          id="btn_cargar"
+          radius="full"
+          className="bg-gradient-to-b from-orange-600 to-orange-300 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
+          onClick={bounded}
+        >
+          Bounded
+        </Button>
+        <Button
+          id="btn_calcular"
+          radius="full"
+          className="bg-gradient-to-b from-pink-900 to-pink-600 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
+          onClick={unbounded}
+        >
+          Unbounded
+        </Button>
+      </div>
+      {modeMessage && (
+        <p className="mx-8 text-lime-500 font-mono text-lg">{modeMessage}</p>
+      )}
       <div id="inputs">
         <h1
           id="titulo_input_capacidad_mochila"
@@ -164,13 +450,6 @@ function Backpack() {
             value={cost}
             onChange={(e) => setCost(e.target.value)}
           />
-          <Input
-            id="np_cantidad_disponible_objeto"
-            className="w-full mx-8"
-            label="Cantidad disponible del objeto"
-            value={available}
-            onChange={(e) => setAvailable(e.target.value)}
-          />
         </div>
         {error2 && (
           <p className="mx-8 mt-8 text-red-500 font-mono text-lg">{error2}</p>
@@ -235,7 +514,25 @@ function Backpack() {
           >
             Resultados
           </h1>
+          <h1
+            id="titulo_tabla"
+            className="text-center mt-4 mb-8 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-red-500"
+          >
+            Tabla de resultados
+          </h1>
           {/* Aquí va la tabla de resultados */}
+          <div id="tabla_m" className="bg-white text-black">
+            {renderizarTabla(matriz)}
+          </div>
+          <h1
+            id="resultado_optimo"
+            className="text-center mt-4 mb-8 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-red-500"
+          >
+            Resultado óptimo:
+          </h1>
+          <h3 className="mb-20 mt-4 font-mono text-2xl font-extrabold dark:text-white tracking-wider text-red-400 text-center">
+            {resultado_optimo}
+          </h3>
         </div>
       )}
     </div>

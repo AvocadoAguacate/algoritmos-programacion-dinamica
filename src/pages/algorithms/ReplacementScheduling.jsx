@@ -1,6 +1,6 @@
 // ========================= IMPORTACIÓN DE LIBRERIAS ==============================    //
 
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Input,
   Button,
@@ -32,6 +32,33 @@ export default function ReplacementScheduling() {
   const [check, setCheck] = useState("");
   const [error, setError] = useState("");
   const [error2, setError2] = useState("");
+
+  // ================= CARGA DE ARCHIVOS =================    //
+
+  const [fileContent, setFileContent] = useState("Hola");
+  // Crear una referencia para el input file
+  const fileInputRef = useRef(null);
+
+  // Función para manejar el clic del botón
+  const handleButtonClick = () => {
+    // Simular el clic en el input file oculto
+    fileInputRef.current.click();
+  };
+
+  // Función para manejar el cambio del input file
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === "text/plain") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Actualizar el estado con el contenido del archivo
+        setFileContent(e.target.result);
+      };
+      reader.readAsText(file);
+    } else {
+      alert("Por favor, seleccione un archivo de texto (.txt)");
+    }
+  };
 
   // Columnas de la tabla de mantenimiento.
 
@@ -519,10 +546,19 @@ export default function ReplacementScheduling() {
           id="btn_cargar"
           radius="full"
           className="bg-gradient-to-b from-yellow-600 to-amber-300 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
-          //onClick={handleLoadData}
+          type="file"
+          onClick={handleButtonClick}
         >
           Cargar datos
         </Button>
+        {/* Input file oculto */}
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+          accept=".txt"
+        />
         <Button
           id="btn_calcular"
           radius="full"
