@@ -5,13 +5,13 @@ function MatrixMultiplication() {
   const [rows, setRows] = useState([{ name: "A1", filas: "", columnas: "" }]);
   const [error, setError] = useState("");
   const [counter, setCounter] = useState(1);
-  const [calcular, setCalcular] = useState(false);
+  const [result, setResult] = useState(false);
 
   let valoresK = [];
 
   const handleCalcularClick = () => {
     // Cambiar el estado de la variable 'calcular' a true
-    setCalcular(true);
+    setResult(true);
   };
 
   const handleInputChange = (index, field, value) => {
@@ -169,7 +169,7 @@ function MatrixMultiplication() {
   };
 
   let tabla_M = null;
-  if (calcular === false) {
+  if (result === false) {
     tabla_M = generateMatrix(100);
   } else {
     tabla_M = setTablaM();
@@ -274,7 +274,7 @@ function MatrixMultiplication() {
   };
 
   let tabla_P = null;
-  if (calcular === false) {
+  if (result === false) {
     tabla_P = generateMatrix(100);
   } else {
     tabla_P = setTablaP();
@@ -314,7 +314,7 @@ function MatrixMultiplication() {
   };
 
   let resultado = null;
-  if (calcular === false) {
+  if (result === false) {
     resultado = "No hay resultados para mostrar.";
   } else {
     resultado = resultadoMultiplicacionOptima(matrixGenericToNormal(tabla_P));
@@ -404,52 +404,54 @@ function MatrixMultiplication() {
           </Button>
         </div>
       </div>
-      <div id="seccion_resultados">
-        <div id="tablas" className="h-auto flex justify-center">
-          <div
-            id="seccion_tabla_m"
-            className="mx-4 my-8 flex flex-col h-auto justify-center items-center"
-          >
-            <h1
-              id="titulo_inputs_iniciales"
-              className="my-10 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+      {result && (
+        <div id="seccion_resultados">
+          <div id="tablas" className="h-auto flex justify-center">
+            <div
+              id="seccion_tabla_m"
+              className="mx-4 my-8 flex flex-col h-auto justify-center items-center"
             >
-              Tabla M
-            </h1>
-            <div id="tabla_m" className="bg-white text-black">
-              {renderizarTablaM(tabla_M)}
+              <h1
+                id="titulo_inputs_iniciales"
+                className="my-10 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+              >
+                Tabla M
+              </h1>
+              <div id="tabla_m" className="bg-white text-black">
+                {renderizarTablaM(tabla_M)}
+              </div>
+            </div>
+            <div
+              id="seccion_tabla_p"
+              className="mx-4 flex flex-col h-auto justify-center items-center"
+            >
+              <h1
+                id="titulo_inputs_iniciales"
+                className="my-10 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+              >
+                Tabla P
+              </h1>
+              <div id="tabla_P" className="bg-white text-black">
+                {renderizarTablaM(tabla_P)}
+              </div>
             </div>
           </div>
           <div
-            id="seccion_tabla_p"
-            className="mx-4 flex flex-col h-auto justify-center items-center"
+            id="seccion_multiplicacion_optima"
+            className="flex flex-col h-auto justify-center items-center"
           >
             <h1
               id="titulo_inputs_iniciales"
-              className="my-10 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+              className="mx-8 my-10 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
             >
-              Tabla P
+              La multiplicación óptima es:
             </h1>
-            <div id="tabla_P" className="bg-white text-black">
-              {renderizarTablaM(tabla_P)}
-            </div>
+            <h3 className="mb-20 mt-4 font-mono text-2xl font-extrabold dark:text-white tracking-wider text-red-400">
+              {resultado}
+            </h3>
           </div>
         </div>
-        <div
-          id="seccion_multiplicacion_optima"
-          className="flex flex-col h-auto justify-center items-center"
-        >
-          <h1
-            id="titulo_inputs_iniciales"
-            className="mx-8 my-10 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
-          >
-            La multiplicación óptima es:
-          </h1>
-          <h3 className="mb-20 mt-4 font-mono text-2xl font-extrabold dark:text-white tracking-wider text-red-400">
-            {resultado}
-          </h3>
-        </div>
-      </div>
+      )}
     </div>
   );
 }

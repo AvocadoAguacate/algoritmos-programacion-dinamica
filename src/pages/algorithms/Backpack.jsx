@@ -26,7 +26,6 @@ function Backpack() {
   const [resultado_optimo, setResultado_Optimo] = useState(
     "No hay un resultado aún..."
   );
-
   const [matriz, setMatriz] = useState([]); // Estado para almacenar la matriz
 
   const columnsObj = [
@@ -101,12 +100,12 @@ function Backpack() {
   }
 
   function bounded() {
-    setMode(true);
+    setMode(false);
     setModeMessage("Modo Bounded activado.");
   }
 
   function unbounded() {
-    setMode(false);
+    setMode(true);
     setModeMessage("Modo Unbounded activado.");
   }
 
@@ -121,6 +120,140 @@ function Backpack() {
     let resultado = "Me llevo " + elementosInvertidos.join(", ");
 
     return resultado;
+  }
+
+  function calculate_Bounded() {
+    // Aquí va el algoritmo Unbounded Knapsack.
+
+    let capacidad = parseInt(capacity);
+
+    //console.log(tableRows);
+    //console.log(tableRows.length);
+    let matriz = generateMatrix(capacidad + 1, tableRows.length);
+    //console.log(matriz);
+
+    for (let columna = 0; columna < tableRows.length; columna++) {
+      // Recolección de datos del objeto.
+
+      let objeto = tableRows[columna];
+      //console.log(objeto);
+      let nombre = objeto.nombre;
+      //console.log(nombre);
+      let valor = parseInt(objeto.valor);
+      //console.log(valor);
+      let costo = parseInt(objeto.costo);
+      //console.log(costo);
+
+      // Inicio del análisis.
+
+      let capacidad_actual = 0;
+      let valor_alcanzado = 0;
+      for (let fila = 0; fila < capacidad + 1; fila++) {
+        //console.log(matriz[fila][columna]);
+
+        let color_actual = "rojo";
+        const cantidad_actual = 1;
+
+        if (columna === 0) {
+          // Análisis de la primera columna.
+
+          if (capacidad_actual < costo) {
+            // Si el primer objeto no cabe.
+            matriz[fila][columna] = {
+              nombre: nombre,
+              valor: valor_alcanzado,
+              costo: costo,
+              color: color_actual,
+            };
+          } else {
+            // Si el primer objeto cabe.
+            let color_actual = "verde";
+            //console.log("Cantidad alcanzada: " + cantidad_alcanzada);
+
+            matriz[fila][columna] = {
+              nombre: nombre,
+              valor: valor,
+              costo: costo,
+              color: color_actual,
+            };
+          }
+        } else {
+          // QUITAR EL IF, DEJAR SOLO ELSE
+          // Análisis de las siguientes columnas.
+
+          if (capacidad_actual < costo) {
+            // Si el primer objeto no cabe.
+            matriz[fila][columna] = {
+              nombre: nombre,
+              valor: matriz[fila][columna - 1].valor,
+              costo: costo,
+              color: "rojo",
+            };
+          } else {
+            // Si el primer objeto cabe.
+            //console.log("VOY POR LA CAPACIDAD ACTUAL: " + capacidad_actual);
+            let cantidad_maxima_por_capacidad = cantidad_actual;
+            //console.log("Cantidad máxima por capacidad: " + cantidad_maxima_por_capacidad);
+            //console.log("");
+            let valores_temporales = [];
+            for (let i = 1; i <= cantidad_maxima_por_capacidad; i++) {
+              //console.log("Qué pasa si me llevo " + i + " objeto(s)?");
+              let valor_restante = capacidad_actual - i * costo;
+              //console.log("Capacidad restante: " + valor_restante);
+
+              let valor_consultado = matriz[valor_restante][columna - 1].valor;
+              //console.log("Valor consultado: " + valor_consultado);
+
+              valor_alcanzado = valor_consultado + i * valor;
+              //console.log("Valor alcanzado: " + valor_alcanzado);
+
+              valores_temporales.push({ valor: valor_alcanzado, cantidad: i });
+            }
+
+            // Encontrar el objeto con el valor más alto
+            let valor_maximo = valores_temporales.reduce(
+              (max, obj) => {
+                return obj.valor > max.valor ? obj : max;
+              },
+              { valor: -Infinity }
+            );
+
+            //console.log("El valor máximo es: ", valor_maximo);
+
+            let valor_anterio = matriz[capacidad_actual][columna - 1].valor;
+            //console.log("Valor anterior: " + valor_anterio);
+
+            if (valor_maximo.valor > valor_anterio) {
+              matriz[fila][columna] = {
+                nombre: nombre,
+                valor: valor_maximo.valor,
+                costo: costo,
+                color: "verde",
+              };
+            } else {
+              matriz[fila][columna] = {
+                nombre: nombre,
+                valor: valor_anterio,
+                costo: costo,
+                color: "rojo",
+              };
+            }
+          }
+        }
+        capacidad_actual++;
+        //console.log("");
+      }
+    }
+
+    // FOR DE REVISIÓN DE COLUMNA ESPECÍFICA.
+
+    for (let fila = 0; fila < capacidad + 1; fila++) {
+      console.log(matriz[fila][3]);
+    }
+
+    setResult(true);
+
+    return matriz;
   }
 
   function calculate_Unbounded() {
@@ -267,9 +400,47 @@ function Backpack() {
     return matriz;
   }
 
-  const renderizarTabla = (matriz, modo) => {
-    if (modo === 1) {
+  const renderizarTabla = (matriz) => {
+    if (mode === false) {
       // Modo Bounded
+      return (
+        <div className="flex justify-center bg-black">
+          <table className="border-collapse table-fixed">
+            <thead>
+              <tr>
+                <th className="border border-white w-12 h-12 font-bold "></th>
+                {matriz[0].map((objeto, index) => (
+                  <th
+                    key={index}
+                    className="border border-white w-36 h-12  font-bold text-white"
+                  >
+                    {objeto.nombre}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {matriz.map((fila, i) => (
+                <tr key={i}>
+                  <td className="border border-white w-12 h-12 font-bold text-center text-white">
+                    {i}
+                  </td>
+                  {fila.map((objeto, j) => (
+                    <td
+                      key={j}
+                      className={`border border-white w-12 h-12 text-center ${
+                        objeto.color === "rojo" ? "bg-red-400" : "bg-lime-400"
+                      }`}
+                    >
+                      <div>{objeto.valor}</div>
+                    </td>
+                  ))}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
     } else {
       // Modo Unbounded
       return (
@@ -318,9 +489,32 @@ function Backpack() {
     let matriz = [];
     let resultado = "";
 
-    if (mode) {
-      //calculate_Bounded();
-      console.log("Bounded");
+    if (mode === false) {
+      // ALGORITMO BOUNDED
+
+      matriz = calculate_Bounded();
+
+      let fila = capacity;
+      let columna = tableRows.length - 1;
+
+      for (let i = 0; i < tableRows.length; i++) {
+        let coordenada = matriz[fila][columna];
+        //console.log(coordenada);
+        //console.log("Fila: " + fila + " Columna: " + columna);
+        if (coordenada.color === "verde") {
+          resultado += coordenada.nombre + ", ";
+          //console.log("Cantidad: " + coordenada.cantidad);
+          //console.log("Costo: " + coordenada.costo);
+          let valor_restado = parseInt(coordenada.costo);
+          //console.log("Valor restado: " + valor_restado);
+          fila -= valor_restado;
+          columna--;
+        } else {
+          //console.log(coordenada);
+          //resultado += "0" + " " + coordenada.nombre + ", ";
+          columna--;
+        }
+      }
     } else {
       // ALGORITMO UNBOUNDED
 
@@ -348,12 +542,11 @@ function Backpack() {
           columna--;
         }
       }
-      console.log(matriz);
     }
 
     setMatriz(matriz);
     setResultado_Optimo(invertirElementos(resultado));
-    
+    console.log(resultado);
   };
 
   return (
@@ -516,7 +709,7 @@ function Backpack() {
           </h1>
           <h1
             id="titulo_tabla"
-            className="text-center mt-4 mb-8 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-red-500"
+            className="text-center mt-4 mb-8 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-purple-600"
           >
             Tabla de resultados
           </h1>
@@ -526,7 +719,7 @@ function Backpack() {
           </div>
           <h1
             id="resultado_optimo"
-            className="text-center mt-4 mb-8 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-red-500"
+            className="text-center my-8 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-purple-600"
           >
             Resultado óptimo:
           </h1>
