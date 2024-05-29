@@ -11,24 +11,45 @@ function MatrixMultiplication() {
 
   // ================= CARGA DE ARCHIVOS =================    //
 
-  const [fileContent, setFileContent] = useState("Hola");
-  // Crear una referencia para el input file
+  // Estado y referencia para el input de archivo
   const fileInputRef = useRef(null);
 
-  // Función para manejar el clic del botón
+  // Función para manejar el clic del botón "Cargar datos"
   const handleButtonClickFile = () => {
-    // Simular el clic en el input file oculto
     fileInputRef.current.click();
   };
 
-  // Función para manejar el cambio del input file
+  // Función para manejar el cambio del input de archivo
   const handleFileChange = (event) => {
+    setResult(false);
     const file = event.target.files[0];
     if (file && file.type === "text/plain") {
       const reader = new FileReader();
       reader.onload = (e) => {
-        // Actualizar el estado con el contenido del archivo
-        setFileContent(e.target.result);
+        try {
+          const json = JSON.parse(e.target.result);
+          if (json.matrices && Array.isArray(json.matrices)) {
+            // Reiniciar el estado antes de cargar nuevos datos
+            setRows([{ name: "A1", filas: "", columnas: "" }]);
+            setCounter(1);
+            setError("");
+
+            const newRows = json.matrices.map((matrix, index) => ({
+              name: matrix.name || `A${index + 1}`,
+              filas: matrix.filas || "",
+              columnas: matrix.columnas || "",
+            }));
+            setRows(newRows);
+            setCounter(newRows.length);
+            setError("");
+          } else {
+            throw new Error("Formato de JSON inválido.");
+          }
+        } catch (err) {
+          setError(
+            "Error al leer el archivo. Asegúrese de que el archivo esté en formato JSON válido."
+          );
+        }
       };
       reader.readAsText(file);
     } else {
@@ -403,7 +424,7 @@ function MatrixMultiplication() {
         {error && (
           <p className="mx-8 mt-4 text-red-500 font-mono text-lg">{error}</p>
         )}
-        <div className="flex">
+        <div className="flex mb-8">
           <Button
             id="btn_cargasr_fatos"
             radius="full"
