@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import { Input, Button } from "@nextui-org/react";
 
 function MatrixMultiplication() {
@@ -8,6 +8,35 @@ function MatrixMultiplication() {
   const [result, setResult] = useState(false);
 
   let valoresK = [];
+
+  // ================= CARGA DE ARCHIVOS =================    //
+
+  const [fileContent, setFileContent] = useState("Hola");
+  // Crear una referencia para el input file
+  const fileInputRef = useRef(null);
+
+  // Función para manejar el clic del botón
+  const handleButtonClickFile = () => {
+    // Simular el clic en el input file oculto
+    fileInputRef.current.click();
+  };
+
+  // Función para manejar el cambio del input file
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === "text/plain") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Actualizar el estado con el contenido del archivo
+        setFileContent(e.target.result);
+      };
+      reader.readAsText(file);
+    } else {
+      alert("Por favor, seleccione un archivo de texto (.txt)");
+    }
+  };
+
+  //===============================================================================
 
   const handleCalcularClick = () => {
     // Cambiar el estado de la variable 'calcular' a true
@@ -380,10 +409,18 @@ function MatrixMultiplication() {
             radius="full"
             fullWidth
             className="bg-gradient-to-b from-red-400 to-red-900 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full ml-8 mr-4 mt-8"
-            //onClick={}
+            onClick={handleButtonClickFile}
           >
-            Cargar
+            Cargar datos
           </Button>
+          {/* Input file oculto */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+            accept=".txt"
+          />
           <Button
             id="btn_set_values"
             radius="full"

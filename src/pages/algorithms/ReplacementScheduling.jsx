@@ -32,6 +32,7 @@ export default function ReplacementScheduling() {
   const [check, setCheck] = useState("");
   const [error, setError] = useState("");
   const [error2, setError2] = useState("");
+  const [result, setResult] = useState(false);
 
   // ================= CARGA DE ARCHIVOS =================    //
 
@@ -332,6 +333,7 @@ export default function ReplacementScheduling() {
     costosMinimos();
     const optimalPlans = generateOptimalPlans(tableRowsObtnPlans);
     setTableRowsObtimPlans(optimalPlans.map((plan) => ({ optimos: plan })));
+    setResult(true);
   };
 
   // ================= CÓDIGO HTML =================    //
@@ -341,7 +343,7 @@ export default function ReplacementScheduling() {
 
     <div
       id="contenedor"
-      className="h-auto w-full flex flex-col bg-black text-white"
+      className="min-h-screen w-full flex flex-col bg-black text-white"
     >
       {/* Sección de datos iniciales. */}
 
@@ -476,69 +478,6 @@ export default function ReplacementScheduling() {
         </Table>
       </div>
 
-      {/* Sección de resultados. */}
-
-      <div id="resultados" className="flex mt-6">
-        {/* Tabla de planes obtenidos. */}
-
-        <div id="planes_obtenidos" className="w-full">
-          <h1
-            id="titulo_planes_obtenidos"
-            className="mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
-          >
-            Planes obtenidos
-          </h1>
-          <Table
-            id="tabla_planes_obtenidos"
-            aria-label="Tabla de Planes Obtenidos"
-            className="text-black w-auto mx-8 mt-6"
-          >
-            <TableHeader>
-              {columnsObtPlans.map((column) => (
-                <TableColumn key={column.key}>{column.label}</TableColumn>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {tableRowsObtnPlans.map((row, index) => (
-                <TableRow key={index}>
-                  {columnsObtPlans.map((column) => (
-                    <TableCell key={column.key}>{row[column.key]}</TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-
-        {/* Tabla de planes óptimos. */}
-
-        <div id="planes_optimos" className="w-full">
-          <h1 className="mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400">
-            Planes óptimos
-          </h1>
-          <Table
-            id="tabla_planes_obtimos"
-            aria-label="Tabla de Planes Obtimos"
-            className="text-black w-auto mx-8 mt-6"
-          >
-            <TableHeader>
-              {columnsObtimPlans.map((column) => (
-                <TableColumn key={column.key}>{column.label}</TableColumn>
-              ))}
-            </TableHeader>
-            <TableBody>
-              {tableRowsObtimPlans.map((row, index) => (
-                <TableRow key={index}>
-                  {columnsObtimPlans.map((column) => (
-                    <TableCell key={column.key}>{row[column.key]}</TableCell>
-                  ))}
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </div>
-      </div>
-
       {/* Botón para cargar datos y calcular. */}
 
       <div id="botones_data" className="flex mb-6">
@@ -568,6 +507,71 @@ export default function ReplacementScheduling() {
           Hacer la calculación...
         </Button>
       </div>
+
+      {/* Sección de resultados. */}
+
+      {result && (
+        <div id="resultados" className="flex mt-6">
+          {/* Tabla de planes obtenidos. */}
+
+          <div id="planes_obtenidos" className="w-full">
+            <h1
+              id="titulo_planes_obtenidos"
+              className="mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+            >
+              Planes obtenidos
+            </h1>
+            <Table
+              id="tabla_planes_obtenidos"
+              aria-label="Tabla de Planes Obtenidos"
+              className="text-black w-auto mx-8 mt-6"
+            >
+              <TableHeader>
+                {columnsObtPlans.map((column) => (
+                  <TableColumn key={column.key}>{column.label}</TableColumn>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {tableRowsObtnPlans.map((row, index) => (
+                  <TableRow key={index}>
+                    {columnsObtPlans.map((column) => (
+                      <TableCell key={column.key}>{row[column.key]}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+
+          {/* Tabla de planes óptimos. */}
+
+          <div id="planes_optimos" className="w-full">
+            <h1 className="mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400">
+              Planes óptimos
+            </h1>
+            <Table
+              id="tabla_planes_obtimos"
+              aria-label="Tabla de Planes Obtimos"
+              className="text-black w-auto mx-8 mt-6"
+            >
+              <TableHeader>
+                {columnsObtimPlans.map((column) => (
+                  <TableColumn key={column.key}>{column.label}</TableColumn>
+                ))}
+              </TableHeader>
+              <TableBody>
+                {tableRowsObtimPlans.map((row, index) => (
+                  <TableRow key={index}>
+                    {columnsObtimPlans.map((column) => (
+                      <TableCell key={column.key}>{row[column.key]}</TableCell>
+                    ))}
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

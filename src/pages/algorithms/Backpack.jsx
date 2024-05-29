@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   Input,
   Button,
@@ -27,6 +27,33 @@ function Backpack() {
     "No hay un resultado aún..."
   );
   const [matriz, setMatriz] = useState([]); // Estado para almacenar la matriz
+
+  // ================= CARGA DE ARCHIVOS =================    //
+
+  const [fileContent, setFileContent] = useState("Hola");
+  // Crear una referencia para el input file
+  const fileInputRef = useRef(null);
+
+  // Función para manejar el clic del botón
+  const handleButtonClick = () => {
+    // Simular el clic en el input file oculto
+    fileInputRef.current.click();
+  };
+
+  // Función para manejar el cambio del input file
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    if (file && file.type === "text/plain") {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        // Actualizar el estado con el contenido del archivo
+        setFileContent(e.target.result);
+      };
+      reader.readAsText(file);
+    } else {
+      alert("Por favor, seleccione un archivo de texto (.txt)");
+    }
+  };
 
   const columnsObj = [
     { key: "nombre", label: "Objeto" },
@@ -643,23 +670,18 @@ function Backpack() {
             value={cost}
             onChange={(e) => setCost(e.target.value)}
           />
-        </div>
-        {error2 && (
-          <p className="mx-8 mt-8 text-red-500 font-mono text-lg">{error2}</p>
-        )}
-        <div
-          id="section_add_button"
-          className="mt-6 flex w-full flex-wrap md:flex-nowrap  items-center"
-        >
           <Button
             id="btn_add_data"
             radius="full"
             className="bg-gradient-to-b from-lime-400 to-yellow-400 text-white shadow-lg font-mono tracking-wider text-lg font-semibold my-4 mx-8 w-full"
             onClick={handleAddRow}
           >
-            Agregar
+            + Agregar
           </Button>
         </div>
+        {error2 && (
+          <p className="mx-8 mt-8 text-red-500 font-mono text-lg">{error2}</p>
+        )}
         <Table
           id="tabla_mantenimientos"
           aria-label="Tabla de Reemplazo de Programación"
@@ -685,10 +707,18 @@ function Backpack() {
             id="btn_cargar"
             radius="full"
             className="bg-gradient-to-b from-yellow-600 to-amber-300 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
-            //onClick={handleLoadData}
+            onClick={handleButtonClick}
           >
             Cargar datos
           </Button>
+          {/* Input file oculto */}
+          <input
+            type="file"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+            accept=".txt"
+          />
           <Button
             id="btn_calcular"
             radius="full"
