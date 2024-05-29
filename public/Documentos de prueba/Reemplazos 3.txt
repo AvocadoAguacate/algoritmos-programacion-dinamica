@@ -1,0 +1,19 @@
+{
+  "initialCost": 800,
+  "projectTime": 12,
+  "vida_util": 5,
+  "maintenanceData": [
+    { "year": 1, "maintenance": 25, "sales": 10000 },
+    { "year": 2, "maintenance": 35, "sales": 9878 },
+    { "year": 3, "maintenance": 42, "sales": 9013 }
+    { "year": 4, "maintenance": 57, "sales": 8629 },
+    { "year": 5, "maintenance": 60, "sales": 7345 },
+    { "year": 6, "maintenance": 71, "sales": 6666 },
+    { "year": 7, "maintenance": 88, "sales": 5914 },
+    { "year": 8, "maintenance": 93, "sales": 4853 },
+    { "year": 9, "maintenance": 107, "sales": 3901 },
+    { "year": 10, "maintenance": 112, "sales": 2067 },
+    { "year": 11, "maintenance": 125, "sales": 1052 },
+    { "year": 12, "maintenance": 136, "sales": 500 }
+  ]
+}

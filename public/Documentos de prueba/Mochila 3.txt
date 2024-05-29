@@ -1,0 +1,40 @@
+{
+  "capacidad_mochila": 77,
+  "objetos": [
+    {
+      "nombre": "Lib. Terror",
+      "valor": 27,
+      "costo": 18
+    },
+    {
+      "nombre": "Lib. Ficción",
+      "valor": 13,
+      "costo": 15
+    },
+    {
+      "nombre": "Lib. Fantasía",
+      "valor": 15,
+      "costo": 10
+    },
+    {
+      "nombre": "Lib. Romance",
+      "valor": 1,
+      "costo": 17
+    },
+    {
+      "nombre": "Lib. Thriller",
+      "valor": 14,
+      "costo": 16
+    },
+    {
+      "nombre": "Lib. Bélico",
+      "valor": 10,
+      "costo": 9
+    },
+    {
+      "nombre": "Lib. Biográfico",
+      "valor": 7,
+      "costo": 12
+    }
+  ]
+}

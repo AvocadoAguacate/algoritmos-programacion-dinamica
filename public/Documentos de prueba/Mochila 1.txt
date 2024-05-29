@@ -1,0 +1,25 @@
+{
+  "capacidad_mochila": 8,
+  "objetos": [
+    {
+      "nombre": "Candelero",
+      "valor": 10000,
+      "costo": 5
+    },
+    {
+      "nombre": "Radio",
+      "valor": 9000,
+      "costo": 3
+    },
+    {
+      "nombre": "Poster",
+      "valor": 5000,
+      "costo": 4
+    },
+    {
+      "nombre": "Anillo",
+      "valor": 15000,
+      "costo": 1
+    }
+  ]
+}

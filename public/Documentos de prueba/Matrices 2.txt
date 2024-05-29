@@ -1,0 +1,64 @@
+{
+  "matrices": [
+    {
+      "name": "A",
+      "filas": 15,
+      "columnas": 27
+    },
+    {
+      "name": "B",
+      "filas": 27,
+      "columnas": 68
+    },
+    {
+      "name": "C",
+      "filas": 68,
+      "columnas": 11
+    },
+    {
+      "name": "D",
+      "filas": 11,
+      "columnas": 3
+    },
+    {
+      "name": "E",
+      "filas": 3,
+      "columnas": 45
+    },
+    {
+      "name": "F",
+      "filas": 45,
+      "columnas": 27
+    },
+    {
+      "name": "G",
+      "filas": 27,
+      "columnas": 112
+    },
+    {
+      "name": "H",
+      "filas": 112,
+      "columnas": 4
+    },
+    {
+      "name": "I",
+      "filas": 4,
+      "columnas": 10
+    },
+    {
+      "name": "J",
+      "filas": 10,
+      "columnas": 50
+    },
+    {
+      "name": "K",
+      "filas": 50,
+      "columnas": 50
+    },
+    {
+      "name": "L",
+      "filas": 50,
+      "columnas": 33
+    }
+  ]
+}

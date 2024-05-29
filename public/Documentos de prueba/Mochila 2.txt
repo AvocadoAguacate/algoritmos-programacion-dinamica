@@ -1,0 +1,20 @@
+{
+  "capacidad_mochila": 10,
+  "objetos": [
+    {
+      "nombre": "Botella",
+      "valor": 11,
+      "costo": 4
+    },
+    {
+      "nombre": "Calcetines",
+      "valor": 7,
+      "costo": 3
+    },
+    {
+      "nombre": "Galletas",
+      "valor": 12,
+      "costo": 5
+    }
+  ]
+}

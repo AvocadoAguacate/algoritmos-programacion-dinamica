@@ -1,0 +1,54 @@
+{
+  "matrices": [
+    {
+      "name": "A1",
+      "filas": 2,
+      "columnas": 4
+    },
+    {
+      "name": "A2",
+      "filas": 4,
+      "columnas": 16
+    },
+    {
+      "name": "A3",
+      "filas": 16,
+      "columnas": 32
+    },
+    {
+      "name": "A4",
+      "filas": 32,
+      "columnas": 64
+    },
+    {
+      "name": "A5",
+      "filas": 64,
+      "columnas": 128
+    },
+    {
+      "name": "A6",
+      "filas": 128,
+      "columnas": 256
+    },
+    {
+      "name": "A7",
+      "filas": 256,
+      "columnas": 512
+    },
+    {
+      "name": "A8",
+      "filas": 512,
+      "columnas": 1024
+    },
+    {
+      "name": "A9",
+      "filas": 1024,
+      "columnas": 2048
+    },
+    {
+      "name": "A10",
+      "filas": 2048,
+      "columnas": 4096
+    }
+  ]
+}
