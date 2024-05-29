@@ -32,11 +32,11 @@ export default function ReplacementScheduling() {
   const [check, setCheck] = useState("");
   const [error, setError] = useState("");
   const [error2, setError2] = useState("");
+  const [errorFile, setErrorFile] = useState("");
   const [result, setResult] = useState(false);
 
   // ================= CARGA DE ARCHIVOS =================    //
 
-  const [fileContent, setFileContent] = useState("Hola");
   // Crear una referencia para el input file
   const fileInputRef = useRef(null);
 
@@ -48,16 +48,39 @@ export default function ReplacementScheduling() {
 
   // Función para manejar el cambio del input file
   const handleFileChange = (event) => {
+    setResult(false);
     const file = event.target.files[0];
     if (file && file.type === "text/plain") {
       const reader = new FileReader();
       reader.onload = (e) => {
-        // Actualizar el estado con el contenido del archivo
-        setFileContent(e.target.result);
+        try {
+          const jsonData = JSON.parse(e.target.result);
+          if (
+            jsonData.initialCost &&
+            jsonData.projectTime &&
+            jsonData.vida_util &&
+            jsonData.maintenanceData &&
+            Array.isArray(jsonData.maintenanceData)
+          ) {
+            // Actualizar el estado con los datos del JSON
+            setInitialCost(jsonData.initialCost.toString());
+            setProjectTime(jsonData.projectTime.toString());
+            setVida_Util(jsonData.vida_util.toString());
+            setTableRows(jsonData.maintenanceData);
+            // Limpiar errores
+            setErrorFile("");
+          } else {
+            throw new Error("Formato de JSON inválido.");
+          }
+        } catch (error) {
+          setErrorFile(
+            "Error al leer el archivo. Asegúrese de que el archivo esté en formato JSON válido."
+          );
+        }
       };
       reader.readAsText(file);
     } else {
-      alert("Por favor, seleccione un archivo de texto (.txt)");
+      setErrorFile("Por favor, seleccione un archivo de texto (.txt).");
     }
   };
 
@@ -328,6 +351,7 @@ export default function ReplacementScheduling() {
 
     setError("");
     setError2("");
+    setErrorFile("");
 
     calculateCosts();
     costosMinimos();
@@ -507,11 +531,14 @@ export default function ReplacementScheduling() {
           Hacer la calculación...
         </Button>
       </div>
+      {errorFile && (
+        <p className="mx-8 mt-8 text-red-500 font-mono text-lg">{errorFile}</p>
+      )}
 
       {/* Sección de resultados. */}
 
       {result && (
-        <div id="resultados" className="flex mt-6">
+        <div id="resultados" className="flex my-6">
           {/* Tabla de planes obtenidos. */}
 
           <div id="planes_obtenidos" className="w-full">

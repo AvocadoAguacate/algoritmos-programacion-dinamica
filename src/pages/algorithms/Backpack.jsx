@@ -20,6 +20,7 @@ function Backpack() {
   const [check, setCheck] = useState("");
   const [error, setError] = useState("");
   const [error2, setError2] = useState("");
+  const [errorFile, setErrorFile] = useState("");
   const [result, setResult] = useState(false);
   const [mode, setMode] = useState(false);
   const [modeMessage, setModeMessage] = useState("");
@@ -42,16 +43,31 @@ function Backpack() {
 
   // Función para manejar el cambio del input file
   const handleFileChange = (event) => {
+    setResult(false);
     const file = event.target.files[0];
     if (file && file.type === "text/plain") {
       const reader = new FileReader();
       reader.onload = (e) => {
-        // Actualizar el estado con el contenido del archivo
-        setFileContent(e.target.result);
+        try {
+          const jsonData = JSON.parse(e.target.result);
+          if (jsonData.capacidad_mochila && Array.isArray(jsonData.objetos)) {
+            // Actualizar el estado con los datos del JSON
+            setCapacity(jsonData.capacidad_mochila.toString());
+            setTableRows(jsonData.objetos);
+            // Limpiar errores
+            setErrorFile("");
+          } else {
+            throw new Error("Formato de JSON inválido.");
+          }
+        } catch (error) {
+          setErrorFile(
+            "Error al leer el archivo. Asegúrese de que el archivo esté en formato JSON válido y contenga los campos necesarios."
+          );
+        }
       };
       reader.readAsText(file);
     } else {
-      alert("Por favor, seleccione un archivo de texto (.txt)");
+      setErrorFile("Por favor, seleccione un archivo JSON.");
     }
   };
 
@@ -728,6 +744,11 @@ function Backpack() {
             Hacer la calculación...
           </Button>
         </div>
+        {errorFile && (
+          <p className="mx-8 mt-8 text-red-500 font-mono text-lg">
+            {errorFile}
+          </p>
+        )}
       </div>
       {result && (
         <div id="resultados" className="mx-8 mt-6">
