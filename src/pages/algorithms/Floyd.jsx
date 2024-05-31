@@ -23,21 +23,25 @@ function Floyd() {
   const [edges, setEdges] = useState([]);
   const [weight, setWeight] = useState(1)
   const [nodeNumber, setNodeNumber] = useState(3);
-  const [showGraph, setSetshowGraph] = useState(false);
+  const [showGraph, setShowGraph] = useState(false);
 
   const fileInputRef = useRef(null);
 
   const options = {
-    // layout: { hierarchical: true },
     edges: {
       color: "white",
       smooth: {
-        type: 'curvedCW',
-        roundness: 0.5,
+        type: 'Dynamic',
       },
       font: {
-        color: "#ffffff" // Cambia el color del label a blanco
+        color: "blue" // Cambia el color del label a blanco
       }
+    },
+    physics: {
+      hierarchicalRepulsion: {
+        nodeDistance: 200, // Ajusta esta distancia según sea necesario
+      },
+      minVelocity: 0.75,
     },
     height: "500px"
   };
@@ -65,6 +69,7 @@ function Floyd() {
   };
 
   const addNode = () => {
+    setShowGraph(false);
     if (nodeName.trim() !== "") {
       const newNode = { label: nodeName, id: `${nodeName}-${nodeList.length}` };
       setNodeList([...nodeList, newNode]);
@@ -74,9 +79,13 @@ function Floyd() {
       setNodeList([...nodeList, newNode]);
       setNodeName("");
     }
+    setTimeout(() => {
+      setShowGraph(true);
+    }, 250);
   };
 
   const addNodes = (count) => {
+    setShowGraph(false);
     setNodeList(prevNodeList => {
       const len = prevNodeList.length;
       const newNodes = Array.from({ length: count }, (_, i) => ({
@@ -85,10 +94,15 @@ function Floyd() {
       }));
       return [...prevNodeList, ...newNodes];
     });
+    setTimeout(() => {
+      setShowGraph(true);
+    }, 250);
   };
 
   const addEdge = () => {
-    const newEdge = { from: nodeA, to: nodeB, label: weight};
+    setShowGraph(false);
+    const newEdge = { from: nodeA, to: nodeB, label: weight.toString(), title: `De ${nodeA} a ${nodeB} son ${weight}`};
+    console.log(newEdge);
     const existingEdgeIndex = edges.findIndex(edge => edge.from === nodeA && edge.to === nodeB);
     console.log(existingEdgeIndex);
     if (existingEdgeIndex !== -1) {
@@ -101,6 +115,9 @@ function Floyd() {
       setEdges([...edges, newEdge]);
     }
     setWeight(1);
+    setTimeout(() => {
+      setShowGraph(true);
+    }, 250);
   };
 
   const saveData = () => {
@@ -116,6 +133,7 @@ function Floyd() {
   };
 
   const loadData = (event) => {
+    setShowGraph(false);
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -126,6 +144,9 @@ function Floyd() {
       };
       reader.readAsText(file);
     }
+    setTimeout(() => {
+      setShowGraph(true);
+    }, 250);
   };
 
   return (
