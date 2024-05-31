@@ -11,6 +11,7 @@ import {
   Select, 
   SelectItem
 } from "@nextui-org/react";
+import Graph from "react-graph-vis";
 
 function Floyd() {
 
@@ -22,8 +23,30 @@ function Floyd() {
   const [edges, setEdges] = useState([]);
   const [weight, setWeight] = useState(1)
   const [nodeNumber, setNodeNumber] = useState(3);
+  const [showGraph, setSetshowGraph] = useState(false);
 
   const fileInputRef = useRef(null);
+
+  const options = {
+    // layout: { hierarchical: true },
+    edges: {
+      color: "white",
+      smooth: {
+        type: 'curvedCW',
+        roundness: 0.5,
+      },
+      font: {
+        color: "#ffffff" // Cambia el color del label a blanco
+      }
+    },
+    height: "500px"
+  };
+
+  const events = {
+    select: function(event) {
+      var { nodes, edges } = event;
+    }
+  };
 
   const handleNodeNameChange = (event) => {
     setNodeName(event.target.value);
@@ -256,7 +279,17 @@ function Floyd() {
           >
             Calcular
           </Button>
-        </div>
+      </div>
+      {showGraph && (
+        <div id="graph" className="flex mb-6">
+        <Graph
+        graph={{nodes: nodeList, edges: edges}}
+        options={options}
+        events={events}
+        style={{ height: "640px" }}
+        />
+      </div>
+      )}
     </div>
   );
 }
