@@ -23,6 +23,8 @@ function Floyd() {
   const [weight, setWeight] = useState(1)
   const [nodeNumber, setNodeNumber] = useState(3);
 
+  const fileInputRef = useRef(null);
+
   const handleNodeNameChange = (event) => {
     setNodeName(event.target.value);
   };
@@ -61,6 +63,7 @@ function Floyd() {
       return [...prevNodeList, ...newNodes];
     });
   };
+
   const addEdge = () => {
     const newEdge = { from: nodeA, to: nodeB, label: weight};
     const existingEdgeIndex = edges.findIndex(edge => edge.from === nodeA && edge.to === nodeB);
@@ -77,6 +80,30 @@ function Floyd() {
     setWeight(1);
   };
 
+  const saveData = () => {
+    const data = JSON.stringify({ nodes: nodeList, edges: edges }, null, 2);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const now = Date.now();
+    link.href = url;
+    link.download = `floyd-${now}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const loadData = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = JSON.parse(e.target.result);
+        setNodeList(data.nodes);
+        setEdges(data.edges);
+      };
+      reader.readAsText(file);
+    }
+  };
 
   return (
     <div id="contenedor"
@@ -200,6 +227,7 @@ function Floyd() {
             id="btn_cargar"
             radius="full"
             className="bg-gradient-to-b from-yellow-600 to-amber-300 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
+            onClick={() => fileInputRef.current.click()}
           >
             Cargar datos
           </Button>
@@ -208,11 +236,14 @@ function Floyd() {
             type="file"
             style={{ display: "none" }}
             accept=".json"
+            ref={fileInputRef}
+            onChange={loadData}
           />
           <Button
             id="btn_calcular"
             radius="full"
             isDisabled={nodeList.length < 3 || edges.length < nodeList.length + 1}
+            onClick={saveData}
             className="bg-gradient-to-b from-orange-600 to-orange-300 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
           >
             Guardar datos
