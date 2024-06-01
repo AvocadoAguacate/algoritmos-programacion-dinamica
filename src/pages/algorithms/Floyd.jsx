@@ -27,6 +27,7 @@ function Floyd() {
   const [resultsD, setResultsD] = useState([]);
   const [resultsP, setResultsP] = useState([]);
   const [showTable, setShowTable] = useState(false);
+  const [showTableCounter, setshowTableCounter] = useState(0)
 
   const fileInputRef = useRef(null);
 
@@ -45,8 +46,7 @@ function Floyd() {
         nodeDistance: 200, // Ajusta esta distancia según sea necesario
       },
       minVelocity: 0.75,
-    },
-    height: "500px"
+    }
   };
 
   const events = {
@@ -84,6 +84,7 @@ function Floyd() {
     }
     setResultsD([]);
     setResultsP([]);
+    setShowTable(false);
     setTimeout(() => {
       setShowGraph(true);
     }, 250);
@@ -101,6 +102,7 @@ function Floyd() {
     });
     setResultsD([]);
     setResultsP([]);
+    setShowTable(false);
     setTimeout(() => {
       setShowGraph(true);
     }, 250);
@@ -124,6 +126,7 @@ function Floyd() {
     setWeight(1);
     setResultsD([]);
     setResultsP([]);
+    setShowTable(false);
     setTimeout(() => {
       setShowGraph(true);
     }, 250);
@@ -221,7 +224,14 @@ function Floyd() {
       distanceMatrix = newDistanceMatrix; // Actualizar la matriz para la siguiente iteración
       pathMatrix = newPathMatrix; 
     }
+    setTimeout(() => {
+      setShowTable(true);
+    }, 1000);
   }
+
+  const showBestRoutes = () => {
+    alert('pendiente');
+  };
 
   return (
     <div id="contenedor"
@@ -382,17 +392,20 @@ function Floyd() {
         graph={{nodes: nodeList, edges: edges}}
         options={options}
         events={events}
-        style={{ height: "640px" }}
+        style={{ height: "500px" }}
         />
       </div>
       )}
-      <Button
-      onClick={() => setShowTable(true)}>
-        Mostrar
-      </Button>
+      <div id="tablas" className="grid grid-cols-2 gap-4">
+      <div id="tablasD">
       {showTable && (
         resultsD.map((matrix, index) => 
-        <div>
+        <div className="mr-4">
+          
+          <h1
+          id="titulo_inputs_iniciales"
+          className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400">
+          D({index})</h1>
           <Table hideHeader aria-label="Table" className="text-black" key={index}>
             {generateTableColumns()}
             <TableBody>
@@ -407,11 +420,18 @@ function Floyd() {
             </TableRow>)}
             </TableBody>
           </Table>
-        </div>)
+        </div>
+        )
       )}
+      </div>
+      <div id="tablasP">
       {showTable && (
         resultsP.map((matrix, index) => 
-        <div>
+        <div className="ml-4">
+        <h1
+          id="titulo_inputs_iniciales"
+          className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400">
+          P({index})</h1>
           <Table hideHeader aria-label="Table" className="text-black" key={index}>
             {generateTableColumns()}
             <TableBody>
@@ -428,6 +448,12 @@ function Floyd() {
           </Table>
         </div>)
       )}
+      </div>
+      </div>
+      <Button
+      onClick={showBestRoutes}>
+        Mostrar mejores rutas
+      </Button>
     </div>
   );
 }
