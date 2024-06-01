@@ -20,6 +20,8 @@ function SportSeries() {
   const [homeGames, setHomeGames] = useState([]);
   const [games, setGames] = useState(3);
   const [table, setTable] = useState([["-", 0, 1, 2],[0, "-", 1, 1],[1, 0, "-", "-"],[2, 0, "-", "-"]]);
+  const [showTable, setShowTable] = useState(false);
+  const [calcs, setCalcs] = useState([])
 
   const fileInputRef = useRef(null);
 
@@ -27,6 +29,7 @@ function SportSeries() {
     const objetive = games/2 + 3 - games%2/2;
     const qrobHome = 1 - probVisit;
     const qrobVisit = 1 - probHome;
+    let newCalc = [];
     // console.log(`objective: ${objetive}`);
     let distanceMatrix = Array.from({ length: objetive }, () =>
       Array(objetive).fill('-')
@@ -44,20 +47,27 @@ function SportSeries() {
         const game = (objetive - 1 - i)+ (objetive - 1 - j);
         let result = 0;
         if(homeGames.includes(game)){// partido en casa
+          newCalc.push(`[${i}][${j}] = ${probHome} * ${distanceMatrix[i-1][j]} + ${qrobVisit} * ${distanceMatrix[i][j-1]}`);
           // console.log(`distanceMatrix[${i}][${j}] = ${probHome} * ${distanceMatrix[i-1][j]} + ${qrobVisit} * ${distanceMatrix[i][j-1]}`)
           result= (probHome * distanceMatrix[i-1][j]) + (qrobVisit * distanceMatrix[i][j-1]);
         } else {
+          newCalc.push(`[${i}][${j}] = ${probHome} * ${distanceMatrix[i-1][j]} + ${qrobVisit} * ${distanceMatrix[i][j-1]}\n`);
           // console.log(`distanceMatrix[${i}][${j}] = ${probVisit} * ${distanceMatrix[i-1][j]} + ${qrobHome} * ${distanceMatrix[i][j-1]}`)
           result= (probVisit * distanceMatrix[i-1][j]) + (qrobHome * distanceMatrix[i][j-1]);
         }
         distanceMatrix[i][j] = result.toFixed(5);
+        setCalcs(newCalc);
       }
     }
     setTable(distanceMatrix);
+    setTimeout(() => {
+      setShowTable(true);
+    }, 500);
   }
 
   const handleGamesChange = (event) => {
     setHomeGames([]);
+    setShowTable(false);
     if(event.target.value < 100 && event.target.value > 0){
       let newValue = event.target.value;
       if(newValue%2 === 0){
@@ -86,6 +96,13 @@ function SportSeries() {
       );
     }
     return checkboxes;
+  };
+  const generateTableColumns = () => {
+    const columns = [];
+    for (let i = 0; i < table.length; i++) {
+      columns.push(<TableColumn key={i}>{i}</TableColumn>)
+    }
+    return columns;
   };
 
   const saveData = () => {
@@ -119,10 +136,8 @@ function SportSeries() {
       };
       reader.readAsText(file);
     }
-    setTable([]);
+    setShowTable(false);
   };
-
-
 
   return (
     <div id="contenedor"
@@ -221,7 +236,46 @@ function SportSeries() {
           >
             Calcular
           </Button>
+          {/* <Button
+            id="btn_calcular"
+            radius="full"
+            onClick={() => setShowTable(true)}
+            className="bg-gradient-to-b from-purple-600 to-blue-600 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
+          >
+            Mostrar
+          </Button> */}
       </div>
+      {showTable && (
+        <Table hideHeader aria-label="Table" className="text-black">
+          <TableHeader>
+            {generateTableColumns()}
+          </TableHeader>
+          <TableBody>
+            {table.map((row, index) => 
+            <TableRow key={index}>
+              {row.map((cell, index) => 
+              <TableCell key={index}>
+                {cell}
+              </TableCell>)}
+            </TableRow>)}
+          </TableBody>
+        </Table>
+      )}
+      {showTable && (
+        <div>
+          <h1
+          id="titulo_inputs_iniciales"
+          className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+          >
+          Calculos
+          </h1>
+          {calcs.map((calc, index) => 
+          <h2 className="mx-8 mt-4 font-mono text-xl" 
+          key={index}>
+            {calc}
+          </h2>)}
+        </div>
+      )}
     </div>
   );
 }
