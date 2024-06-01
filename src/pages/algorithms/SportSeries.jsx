@@ -19,13 +19,15 @@ function SportSeries() {
   const [probVisit, setprobVisit] = useState(0.5);
   const [homeGames, setHomeGames] = useState([]);
   const [games, setGames] = useState(3);
-  const [table, setTable] = useState([["-", 0, 1, 2],[0, "-", 1, 1],[1, 0, "-", "-"],[2, 0, "-", "-"]])
+  const [table, setTable] = useState([["-", 0, 1, 2],[0, "-", 1, 1],[1, 0, "-", "-"],[2, 0, "-", "-"]]);
 
-  const generateEmptyTable = () => {
+  const fileInputRef = useRef(null);
+
+  const solve = () => {
     const objetive = games/2 + 3 - games%2/2;
     const qrobHome = 1 - probVisit;
     const qrobVisit = 1 - probHome;
-    console.log(`objective: ${objetive}`);
+    // console.log(`objective: ${objetive}`);
     let distanceMatrix = Array.from({ length: objetive }, () =>
       Array(objetive).fill('-')
     );
@@ -42,8 +44,10 @@ function SportSeries() {
         const game = (objetive - 1 - i)+ (objetive - 1 - j);
         let result = 0;
         if(homeGames.includes(game)){// partido en casa
+          // console.log(`distanceMatrix[${i}][${j}] = ${probHome} * ${distanceMatrix[i-1][j]} + ${qrobVisit} * ${distanceMatrix[i][j-1]}`)
           result= (probHome * distanceMatrix[i-1][j]) + (qrobVisit * distanceMatrix[i][j-1]);
         } else {
+          // console.log(`distanceMatrix[${i}][${j}] = ${probVisit} * ${distanceMatrix[i-1][j]} + ${qrobHome} * ${distanceMatrix[i][j-1]}`)
           result= (probVisit * distanceMatrix[i-1][j]) + (qrobHome * distanceMatrix[i][j-1]);
         }
         distanceMatrix[i][j] = result.toFixed(5);
@@ -82,6 +86,40 @@ function SportSeries() {
       );
     }
     return checkboxes;
+  };
+
+  const saveData = () => {
+    const data = JSON.stringify(
+      { games: games, 
+        probHome: probHome,
+        probVisit:probVisit,
+        homeGames: homeGames
+      },
+      null, 2);
+    const blob = new Blob([data], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    const now = Date.now();
+    link.href = url;
+    link.download = `sportseries-${now}.json`;
+    link.click();
+    URL.revokeObjectURL(url);
+  };
+
+  const loadData = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const data = JSON.parse(e.target.result);
+        setGames(data.games);
+        setProbHome(data.probHome);
+        setprobVisit(data.probVisit);
+        setHomeGames(data.homeGames);
+      };
+      reader.readAsText(file);
+    }
+    setTable([]);
   };
 
 
@@ -150,11 +188,39 @@ function SportSeries() {
         </div>  
       </div>
       </div>
-      <div>
-        <Button
-        onClick={generateEmptyTable}>
-          test
-        </Button>
+      <div id="botones_data" className="flex mb-6">
+          <Button
+            id="btn_cargar"
+            radius="full"
+            className="bg-gradient-to-b from-yellow-600 to-amber-300 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
+            onClick={() => fileInputRef.current.click()}
+          >
+            Cargar datos
+          </Button>
+          {/* Input file oculto */}
+          <input
+            type="file"
+            style={{ display: "none" }}
+            accept=".json"
+            ref={fileInputRef}
+            onChange={loadData}
+          />
+          <Button
+            id="btn_calcular"
+            radius="full"
+            onClick={saveData}
+            className="bg-gradient-to-b from-orange-600 to-orange-300 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
+          >
+            Guardar datos
+          </Button>
+          <Button
+            id="btn_calcular"
+            radius="full"
+            onClick={solve}
+            className="bg-gradient-to-b from-purple-600 to-blue-600 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
+          >
+            Calcular
+          </Button>
       </div>
     </div>
   );
