@@ -19,11 +19,47 @@ function SportSeries() {
   const [probVisit, setprobVisit] = useState(0.5);
   const [homeGames, setHomeGames] = useState([]);
   const [games, setGames] = useState(3);
+  const [table, setTable] = useState([["-", 0, 1, 2],[0, "-", 1, 1],[1, 0, "-", "-"],[2, 0, "-", "-"]])
+
+  const generateEmptyTable = () => {
+    const objetive = games/2 + 3 - games%2/2;
+    const qrobHome = 1 - probVisit;
+    const qrobVisit = 1 - probHome;
+    console.log(`objective: ${objetive}`);
+    let distanceMatrix = Array.from({ length: objetive }, () =>
+      Array(objetive).fill('-')
+    );
+    for (let index = 0; index < objetive - 1; index++) {
+      distanceMatrix[0][index+1]= index;
+      distanceMatrix[index+1][0]= index;
+    }
+    for (let index = 0; index < objetive - 2; index++) {
+      distanceMatrix[1][index+2]= 1;
+      distanceMatrix[index+2][1]= 0; 
+    }
+    for (let i = 2; i < objetive; i++) {
+      for (let j = 2; j < objetive; j++) {
+        const game = (objetive - 1 - i)+ (objetive - 1 - j);
+        let result = 0;
+        if(homeGames.includes(game)){// partido en casa
+          result= (probHome * distanceMatrix[i-1][j]) + (qrobVisit * distanceMatrix[i][j-1]);
+        } else {
+          result= (probVisit * distanceMatrix[i-1][j]) + (qrobHome * distanceMatrix[i][j-1]);
+        }
+        distanceMatrix[i][j] = result.toFixed(5);
+      }
+    }
+    setTable(distanceMatrix);
+  }
 
   const handleGamesChange = (event) => {
     setHomeGames([]);
     if(event.target.value < 100 && event.target.value > 0){
-      setGames(event.target.value);
+      let newValue = event.target.value;
+      if(newValue%2 === 0){
+        newValue < games ? newValue-- : newValue++;
+      }
+      setGames(newValue);
     } else {
       setGames(3);
     }
@@ -47,6 +83,8 @@ function SportSeries() {
     }
     return checkboxes;
   };
+
+
 
   return (
     <div id="contenedor"
@@ -111,6 +149,12 @@ function SportSeries() {
         </div>
         </div>  
       </div>
+      </div>
+      <div>
+        <Button
+        onClick={generateEmptyTable}>
+          test
+        </Button>
       </div>
     </div>
   );
