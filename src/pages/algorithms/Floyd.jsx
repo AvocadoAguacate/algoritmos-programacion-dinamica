@@ -450,10 +450,13 @@ function Floyd() {
       )}
       </div>
       </div>
-      <Button
+      {showTable && (
+        <Button
       onClick={showBestRoutes}>
         Mostrar mejores rutas
       </Button>
+      )}
+      
     </div>
   );
 }
