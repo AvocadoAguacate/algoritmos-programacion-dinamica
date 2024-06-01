@@ -1,0 +1,72 @@
+{
+  "nodes": [
+    {
+      "label": "node0",
+      "id": "node0-0"
+    },
+    {
+      "label": "node1",
+      "id": "node1-1"
+    },
+    {
+      "label": "node2",
+      "id": "node2-2"
+    },
+    {
+      "label": "node3",
+      "id": "node3-3"
+    }
+  ],
+  "edges": [
+    {
+      "from": "node0-0",
+      "to": "node1-1",
+      "label": "2",
+      "id": "beec516e-2db3-485b-93c6-ce68d2f05ca0"
+    },
+    {
+      "from": "node0-0",
+      "to": "node2-2",
+      "label": "4",
+      "id": "efeee491-e0a7-4cfd-8edd-0142616f73ad"
+    },
+    {
+      "from": "node0-0",
+      "to": "node3-3",
+      "label": "8",
+      "id": "7c4a9f2b-d585-4775-8a29-c5d75afea80b"
+    },
+    {
+      "from": "node1-1",
+      "to": "node0-0",
+      "label": "1",
+      "id": "3efdfceb-8e76-4783-8e10-5f32100ab614"
+    },
+    {
+      "from": "node1-1",
+      "to": "node2-2",
+      "label": "5",
+      "id": "f7b138d3-7f89-4bb7-be6c-7068dabf03e9"
+    },
+    {
+      "from": "node1-1",
+      "to": "node3-3",
+      "label": "10",
+      "id": "199c87c6-7308-46ee-a961-fe10dfe2f9eb"
+    },
+    {
+      "from": "node3-3",
+      "to": "node1-1",
+      "label": "1",
+      "title": "De node3-3 a node1-1 son 1",
+      "id": "7ad12121-71ba-401d-a00f-00a0d45a682d"
+    },
+    {
+      "from": "node2-2",
+      "to": "node3-3",
+      "label": "2",
+      "title": "De node2-2 a node3-3 son 2",
+      "id": "1f7540b6-6ee5-4b45-9160-e7dd9608feed"
+    }
+  ]
+}
