@@ -143,7 +143,7 @@ function SportSeries() {
   return (
     <div id="contenedor"
     className="min-h-screen w-full flex flex-col bg-black text-white">
-            <div id="seccion_inputs_iniciales">
+        <div id="seccion_inputs_iniciales">
         <h1
           id="titulo_inputs_iniciales"
           className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
