@@ -24,6 +24,9 @@ function Floyd() {
   const [weight, setWeight] = useState(1)
   const [nodeNumber, setNodeNumber] = useState(3);
   const [showGraph, setShowGraph] = useState(false);
+  const [resultsD, setResultsD] = useState([]);
+  const [resultsP, setResultsP] = useState([]);
+  const [showTable, setShowTable] = useState(false);
 
   const fileInputRef = useRef(null);
 
@@ -31,7 +34,7 @@ function Floyd() {
     edges: {
       color: "white",
       smooth: {
-        type: 'Dynamic',
+        type: 'dynamic',
       },
       font: {
         color: "blue" // Cambia el color del label a blanco
@@ -79,6 +82,8 @@ function Floyd() {
       setNodeList([...nodeList, newNode]);
       setNodeName("");
     }
+    setResultsD([]);
+    setResultsP([]);
     setTimeout(() => {
       setShowGraph(true);
     }, 250);
@@ -94,6 +99,8 @@ function Floyd() {
       }));
       return [...prevNodeList, ...newNodes];
     });
+    setResultsD([]);
+    setResultsP([]);
     setTimeout(() => {
       setShowGraph(true);
     }, 250);
@@ -115,9 +122,17 @@ function Floyd() {
       setEdges([...edges, newEdge]);
     }
     setWeight(1);
+    setResultsD([]);
+    setResultsP([]);
     setTimeout(() => {
       setShowGraph(true);
     }, 250);
+  };
+
+  const generateTableColumns = () => {
+    return nodeList.map(node => (
+      <TableColumn key={node.id}>{node.label}</TableColumn>
+    ));
   };
 
   const saveData = () => {
@@ -148,6 +163,54 @@ function Floyd() {
       setShowGraph(true);
     }, 250);
   };
+
+  const resolve = () => {
+    const size = nodeList.length;
+    const distanceMatrix = Array.from({ length: size }, () =>
+      Array(size).fill({value:Infinity})
+    );
+    const pathMatrix = Array.from({ length: size }, () =>
+      Array(size).fill(0)
+    );
+    for (let index = 0; index < size; index++) {
+      distanceMatrix[index][index] = {value: 0};
+    }
+    edges.forEach(edge => {
+      const to = nodeList.findIndex(node => node.id === edge.to);
+      const from = nodeList.findIndex(node => node.id === edge.from);
+      distanceMatrix[from][to] = {value:parseInt(edge.label)};
+    })
+    const deepCopyMatrix = (matrix) => {
+      return matrix.map(row => row.map(cell => ({ ...cell })));
+    };
+    const deepCopyPathMatrix = (matrix) => {
+      return matrix.map(row => [...row]);
+    };
+    setResultsD(prevResults => [...prevResults, deepCopyMatrix(distanceMatrix)]);
+    setResultsP(prevResults => [...prevResults, deepCopyPathMatrix(pathMatrix)]);
+    for (let k = 0; k < size; k++) {
+      for (let i = 0; i < size; i++) {
+        for (let j = 0; j < size; j++) {
+          if (distanceMatrix[i][k].value + distanceMatrix[k][j].value < distanceMatrix[i][j].value) {
+            const newValue = distanceMatrix[i][k].value + distanceMatrix[k][j].value;
+            console.log(`oportunidad en ${k} en [${i}][${j}]`);
+            distanceMatrix[i][j] = {
+              value: newValue, 
+              exp: `${distanceMatrix[i][k].value} + ${distanceMatrix[k][j].value} < ${distanceMatrix[i][j].value}`
+            }
+            pathMatrix[i][j] = nodeList[k];
+          } else{
+            distanceMatrix[i][j] = {
+              value: distanceMatrix[i][j].value,
+              exp: `${distanceMatrix[i][j].value} < ${distanceMatrix[i][k].value} + ${distanceMatrix[k][j].value}`
+            };
+          }
+        }
+      }
+      setResultsD(prevResults => [...prevResults, deepCopyMatrix(distanceMatrix)]);
+      setResultsP(prevResults => [...prevResults, deepCopyPathMatrix(pathMatrix)]);
+    }
+  }
 
   return (
     <div id="contenedor"
@@ -295,6 +358,7 @@ function Floyd() {
           <Button
             id="btn_calcular"
             radius="full"
+            onClick={resolve}
             isDisabled={nodeList.length < 3 || edges.length < nodeList.length + 1}
             className="bg-gradient-to-b from-purple-600 to-blue-600 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
           >
@@ -310,6 +374,27 @@ function Floyd() {
         style={{ height: "640px" }}
         />
       </div>
+      )}
+      <Button
+      onClick={() => setShowTable(true)}>
+        Mostrar
+      </Button>
+      {showTable && (
+        resultsD.map((matrix, index) => 
+        <Table hideHeader aria-label="Table" className="text-black" key={index}>
+          <TableHeader>
+            {generateTableColumns()}
+          </TableHeader>
+          <TableBody>
+          {matrix.map((row, index) => 
+          <TableRow key={index}>
+            {row.map((cell, index) => 
+            <TableCell key={index}>
+              {cell.value === Infinity ? '∞' : cell.value}
+            </TableCell>)}
+          </TableRow>)}
+          </TableBody>
+        </Table>)
       )}
     </div>
   );
