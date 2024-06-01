@@ -130,9 +130,20 @@ function Floyd() {
   };
 
   const generateTableColumns = () => {
-    return nodeList.map(node => (
+    return <TableHeader>
+    <TableColumn> - </TableColumn>
+    {nodeList.map(node => (
       <TableColumn key={node.id}>{node.label}</TableColumn>
-    ));
+    ))}
+    </TableHeader>
+  };
+  const generateRealColumns = () => {
+    return <TableRow>
+      <TableCell> - </TableCell>
+      {nodeList.map(node => (
+        <TableCell key={node.id}>{node.label}</TableCell>
+      ))}
+    </TableRow>;
   };
 
   const saveData = () => {
@@ -166,10 +177,10 @@ function Floyd() {
 
   const resolve = () => {
     const size = nodeList.length;
-    const distanceMatrix = Array.from({ length: size }, () =>
+    let distanceMatrix = Array.from({ length: size }, () =>
       Array(size).fill({value:Infinity})
     );
-    const pathMatrix = Array.from({ length: size }, () =>
+    let pathMatrix = Array.from({ length: size }, () =>
       Array(size).fill(0)
     );
     for (let index = 0; index < size; index++) {
@@ -186,29 +197,29 @@ function Floyd() {
     const deepCopyPathMatrix = (matrix) => {
       return matrix.map(row => [...row]);
     };
-    setResultsD(prevResults => [...prevResults, deepCopyMatrix(distanceMatrix)]);
-    setResultsP(prevResults => [...prevResults, deepCopyPathMatrix(pathMatrix)]);
+    setResultsD([deepCopyMatrix(distanceMatrix)]);
+    setResultsP([deepCopyPathMatrix(pathMatrix)]);
     for (let k = 0; k < size; k++) {
+      let newDistanceMatrix = deepCopyMatrix(distanceMatrix);
+      let newPathMatrix = deepCopyPathMatrix(pathMatrix);
+  
       for (let i = 0; i < size; i++) {
         for (let j = 0; j < size; j++) {
-          if (distanceMatrix[i][k].value + distanceMatrix[k][j].value < distanceMatrix[i][j].value) {
-            const newValue = distanceMatrix[i][k].value + distanceMatrix[k][j].value;
-            console.log(`oportunidad en ${k} en [${i}][${j}]`);
-            distanceMatrix[i][j] = {
-              value: newValue, 
-              exp: `${distanceMatrix[i][k].value} + ${distanceMatrix[k][j].value} < ${distanceMatrix[i][j].value}`
-            }
-            pathMatrix[i][j] = nodeList[k];
-          } else{
-            distanceMatrix[i][j] = {
-              value: distanceMatrix[i][j].value,
-              exp: `${distanceMatrix[i][j].value} < ${distanceMatrix[i][k].value} + ${distanceMatrix[k][j].value}`
+          if (newDistanceMatrix[i][k].value + newDistanceMatrix[k][j].value < newDistanceMatrix[i][j].value) {
+            const newValue = newDistanceMatrix[i][k].value + newDistanceMatrix[k][j].value;
+            newDistanceMatrix[i][j] = {
+              value: newValue,
+              // exp: `${newDistanceMatrix[i][k].value} + ${newDistanceMatrix[k][j].value} < ${newDistanceMatrix[i][j].value}`
             };
+            newPathMatrix[i][j] = k + 1; // Solo almacenar el índice del nodo intermedio
           }
         }
       }
-      setResultsD(prevResults => [...prevResults, deepCopyMatrix(distanceMatrix)]);
-      setResultsP(prevResults => [...prevResults, deepCopyPathMatrix(pathMatrix)]);
+      // Agregar las nuevas matrices a los resultados
+      setResultsD(prevResults => [...prevResults, newDistanceMatrix]);
+      setResultsP(prevResults => [...prevResults, newPathMatrix]);
+      distanceMatrix = newDistanceMatrix; // Actualizar la matriz para la siguiente iteración
+      pathMatrix = newPathMatrix; 
     }
   }
 
@@ -381,20 +392,41 @@ function Floyd() {
       </Button>
       {showTable && (
         resultsD.map((matrix, index) => 
-        <Table hideHeader aria-label="Table" className="text-black" key={index}>
-          <TableHeader>
+        <div>
+          <Table hideHeader aria-label="Table" className="text-black" key={index}>
             {generateTableColumns()}
-          </TableHeader>
-          <TableBody>
-          {matrix.map((row, index) => 
-          <TableRow key={index}>
-            {row.map((cell, index) => 
-            <TableCell key={index}>
-              {cell.value === Infinity ? '∞' : cell.value}
-            </TableCell>)}
-          </TableRow>)}
-          </TableBody>
-        </Table>)
+            <TableBody>
+            {generateRealColumns()}
+            {matrix.map((row, index) => 
+            <TableRow key={index}>
+              <TableCell>{nodeList[index].label}</TableCell>
+              {row.map((cell, index) => 
+              <TableCell key={index}>
+                {cell.value === Infinity ? '∞' : cell.value} {cell.exp ? `(${cell.exp})` : ''}
+              </TableCell>)}
+            </TableRow>)}
+            </TableBody>
+          </Table>
+        </div>)
+      )}
+      {showTable && (
+        resultsP.map((matrix, index) => 
+        <div>
+          <Table hideHeader aria-label="Table" className="text-black" key={index}>
+            {generateTableColumns()}
+            <TableBody>
+            {generateRealColumns()}
+            {matrix.map((row, index) => 
+            <TableRow key={index}>
+              <TableCell>{nodeList[index].label}</TableCell>
+              {row.map((cell, index) => 
+              <TableCell key={index}>
+                {cell}
+              </TableCell>)}
+            </TableRow>)}
+            </TableBody>
+          </Table>
+        </div>)
       )}
     </div>
   );
