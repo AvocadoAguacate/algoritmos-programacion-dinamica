@@ -47,13 +47,14 @@ function SportSeries() {
         const game = (objetive - 1 - i)+ (objetive - 1 - j);
         let result = 0;
         if(homeGames.includes(game)){// partido en casa
-          newCalc.push(`[${i}][${j}] = ${probHome} * ${distanceMatrix[i-1][j]} + ${qrobVisit} * ${distanceMatrix[i][j-1]}`);
-          // console.log(`distanceMatrix[${i}][${j}] = ${probHome} * ${distanceMatrix[i-1][j]} + ${qrobVisit} * ${distanceMatrix[i][j-1]}`)
           result= (probHome * distanceMatrix[i-1][j]) + (qrobVisit * distanceMatrix[i][j-1]);
+          newCalc.push(`[${i-1}][${j-1}] = ${result.toFixed(5)} = ${probHome} * ${distanceMatrix[i-1][j]} + ${qrobVisit} * ${distanceMatrix[i][j-1]}`);
+          // console.log(`distanceMatrix[${i}][${j}] = ${probHome} * ${distanceMatrix[i-1][j]} + ${qrobVisit} * ${distanceMatrix[i][j-1]}`)
+          
         } else {
-          newCalc.push(`[${i}][${j}] = ${probHome} * ${distanceMatrix[i-1][j]} + ${qrobVisit} * ${distanceMatrix[i][j-1]}\n`);
-          // console.log(`distanceMatrix[${i}][${j}] = ${probVisit} * ${distanceMatrix[i-1][j]} + ${qrobHome} * ${distanceMatrix[i][j-1]}`)
           result= (probVisit * distanceMatrix[i-1][j]) + (qrobHome * distanceMatrix[i][j-1]);
+          newCalc.push(`[${i-1}][${j-1}] = ${result.toFixed(5)} = ${probHome} * ${distanceMatrix[i-1][j]} + ${qrobVisit} * ${distanceMatrix[i][j-1]}\n`);
+          // console.log(`distanceMatrix[${i}][${j}] = ${probVisit} * ${distanceMatrix[i-1][j]} + ${qrobHome} * ${distanceMatrix[i][j-1]}`)
         }
         distanceMatrix[i][j] = result.toFixed(5);
         setCalcs(newCalc);
