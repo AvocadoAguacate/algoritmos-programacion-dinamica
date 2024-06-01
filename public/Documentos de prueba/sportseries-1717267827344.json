@@ -1,0 +1,8 @@
+{
+  "games": 3,
+  "probHome": "0.3",
+  "probVisit": "0.9",
+  "homeGames": [
+    1
+  ]
+}
