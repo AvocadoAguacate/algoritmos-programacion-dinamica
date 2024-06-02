@@ -268,7 +268,7 @@ function SportSeries() {
           id="titulo_inputs_iniciales"
           className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
           >
-          Calculos
+          Cálculos
           </h1>
           {calcs.map((calc, index) => 
           <h2 className="mx-8 mt-4 font-mono text-xl" 

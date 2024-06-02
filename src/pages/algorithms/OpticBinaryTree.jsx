@@ -22,6 +22,7 @@ function OpticBinaryTree() {
   const [tableA, setTableA] = useState([]);
   const [tableB, setTableB] = useState([]);
   const [showTable, setShowTable] = useState(false);
+  const [calcs, setCalcs] = useState([])
 
   const fileInputRef = useRef(null);
 
@@ -41,7 +42,15 @@ function OpticBinaryTree() {
     setNodeList([...nodeList, newNode]);
     setNodeWeight(1);
     setNodeName('');
+    setShowTable(false);
   }
+  const generateTableColumns = () => {
+    const columns = [];
+    for (let i = 0; i < tableA.length; i++) {
+      columns.push(<TableColumn key={i}>{i}</TableColumn>)
+    }
+    return columns;
+  };
 
   const saveData = () => {
     const data = JSON.stringify(
@@ -68,11 +77,13 @@ function OpticBinaryTree() {
       };
       reader.readAsText(file);
     }
+    setShowTable(false);
   };
 
   const solve = () => {
     //calc total
     let total = 0;
+    let newCalc = [];
     nodeList.forEach(node => {
       total = total + parseInt(node.value);
     });
@@ -80,10 +91,11 @@ function OpticBinaryTree() {
     //calc probs
     let probs = [];
     nodeList.forEach((node, index) => {
+      let newProb = node.value/total
       probs.push({
         id: node.id,
         name: node.name,
-        prob: node.value/total
+        prob: newProb
       })
     });
     setProbList(probs);
@@ -116,7 +128,7 @@ function OpticBinaryTree() {
           let pTotal = 0;
           let minAux = 1000000;
           let auxR = 0;
-          console.log(`[${z}][${z+k}]`)
+          newCalc.push(`[${z}][${z+k}]`);
           for (let i = z-1; i < z+k-1; i++) {
             pTotal = pTotal + probs[i].prob;
           }
@@ -127,16 +139,16 @@ function OpticBinaryTree() {
               minAux = aux;
               auxR = ka;
             }
-            console.log(`k=${ka}`);
-            console.log(`${temptableA[z][ka-1]} + ${temptableA[ka+1][z+k]} + ${pTotal} = ${aux}`)
+            newCalc.push(`k=${ka}`);
+            newCalc.push(`${temptableA[z][ka-1]} + ${temptableA[ka+1][z+k]} + ${pTotal} = ${aux}`)
           }
-          temptableA[z][z+k] = minAux;
+          temptableA[z][z+k] = minAux.toFixed(4);
           temptableR[z][z+k] = auxR;
         }
       }
     }
     // ultima celda
-    console.log(`[${1}][${objetive-1}]`)
+    newCalc.push(`[${1}][${objetive-1}]`);
     let minFinal = 1000000000;
     let rFinal = 0;
     for (let k = 1; k < probs.length + 1; k++) {
@@ -145,13 +157,17 @@ function OpticBinaryTree() {
         minFinal = aux;
         rFinal = k;
       }
-      console.log(`k=${k}`);
-      console.log(`${temptableA[1][k-1]} + ${temptableA[k+1][objetive-1]} + ${1} = ${aux}`)
+      newCalc.push(`k=${k}`);
+      newCalc.push(`${temptableA[1][k-1]} + ${temptableA[k+1][objetive-1]} + ${1} = ${aux}`);
     }
     temptableA[1][objetive-1]= minFinal;
     temptableR[1][objetive-1]= rFinal;
     setTableA(temptableA);
     setTableB(temptableR);
+    setCalcs(newCalc);
+    setTimeout(() => {
+      setShowTable(true);
+    }, 500);
   }
 
   return (
@@ -232,6 +248,65 @@ function OpticBinaryTree() {
             Calcular
           </Button>
       </div>
+      {showTable && (
+        <div id="tablas">
+          <div className="mr-4">
+            <h1
+            id="titulo_inputs_iniciales"
+            className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400">
+            Tabla A</h1>
+            <Table hideHeader aria-label="TableA" className="text-black">
+              <TableHeader>
+                {generateTableColumns()}
+              </TableHeader>
+              <TableBody>
+                {tableA.map((row, index) => 
+                  <TableRow key={index}>
+                    {row.map((cell, index) => 
+                      <TableCell key={index}>
+                        {cell}
+                      </TableCell>)}
+                  </TableRow>)}
+              </TableBody>
+            </Table>
+          </div>
+          <div className="mr-4">
+            <h1
+            id="titulo_inputs_iniciales"
+            className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400">
+            Tabla R</h1>
+            <Table hideHeader aria-label="TableR" className="text-black">
+              <TableHeader>
+                  {generateTableColumns()}
+              </TableHeader>
+              <TableBody>
+                {tableB.map((row, index) => 
+                  <TableRow key={index}>
+                    {row.map((cell, index) => 
+                      <TableCell key={index}>
+                        {cell}
+                      </TableCell>)}
+                  </TableRow>)}
+              </TableBody>
+            </Table>
+          </div>
+        </div>
+      )}
+      {/* {showTable && (
+        <div>
+          <h1
+          id="titulo_inputs_iniciales"
+          className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400"
+          >
+          Cálculos
+          </h1>
+          {calcs.map((calc, index) => 
+          <h2 className="mx-8 mt-4 font-mono text-xl" 
+          key={index}>
+            {calc}
+          </h2>)}
+        </div>
+      )} */}
     </div>
   );
 }
