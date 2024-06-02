@@ -95,7 +95,7 @@ function OpticBinaryTree() {
       probs.push({
         id: node.id,
         name: node.name,
-        prob: newProb
+        prob: parseFloat(newProb.toFixed(3))
       })
     });
     setProbList(probs);
@@ -134,15 +134,15 @@ function OpticBinaryTree() {
           }
           for (let i = z-1; i < z+k-1; i++) {
             let ka = i + 1; //k de la formula
-            let aux = temptableA[z][ka-1] + temptableA[ka+1][z+k] + pTotal;
+            let aux = temptableA[z][ka-1] + temptableA[ka+1][z+k] + parseFloat(pTotal.toFixed(3));
             if(minAux>aux){
-              minAux = aux;
+              minAux = parseFloat(aux.toFixed(3));
               auxR = ka;
             }
             newCalc.push(`k=${ka}`);
             newCalc.push(`${temptableA[z][ka-1]} + ${temptableA[ka+1][z+k]} + ${pTotal} = ${aux}`)
           }
-          temptableA[z][z+k] = minAux.toFixed(4);
+          temptableA[z][z+k] = minAux;
           temptableR[z][z+k] = auxR;
         }
       }
@@ -154,13 +154,13 @@ function OpticBinaryTree() {
     for (let k = 1; k < probs.length + 1; k++) {
       let aux = temptableA[1][k-1] + temptableA[k+1][objetive-1] + 1;
       if(minFinal>aux){
-        minFinal = aux;
+        minFinal = parseFloat(aux.toFixed(3));
         rFinal = k;
       }
       newCalc.push(`k=${k}`);
       newCalc.push(`${temptableA[1][k-1]} + ${temptableA[k+1][objetive-1]} + ${1} = ${aux}`);
     }
-    temptableA[1][objetive-1]= minFinal;
+    temptableA[1][objetive-1]= parseFloat(minFinal.toFixed(3));
     temptableR[1][objetive-1]= rFinal;
     setTableA(temptableA);
     setTableB(temptableR);
