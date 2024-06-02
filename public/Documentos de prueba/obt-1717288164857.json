@@ -1,0 +1,89 @@
+{
+  "nodeList": [
+    {
+      "id": "Té-0",
+      "value": "10",
+      "name": "Té"
+    },
+    {
+      "id": "Taz-1",
+      "value": "10",
+      "name": "Taz"
+    },
+    {
+      "id": "Test-2",
+      "value": "20",
+      "name": "Test"
+    },
+    {
+      "id": "Test-3",
+      "value": "5",
+      "name": "Test"
+    },
+    {
+      "id": "HP-4",
+      "value": "2",
+      "name": "HP"
+    },
+    {
+      "id": "Toto-5",
+      "value": "6",
+      "name": "Toto"
+    },
+    {
+      "id": "Tata-6",
+      "value": "40",
+      "name": "Tata"
+    },
+    {
+      "id": "Inge-7",
+      "value": 1,
+      "name": "Inge"
+    },
+    {
+      "id": "Morta-8",
+      "value": "3",
+      "name": "Morta"
+    },
+    {
+      "id": "Pepón-9",
+      "value": "3",
+      "name": "Pepón"
+    },
+    {
+      "id": "T-10",
+      "value": 1,
+      "name": "T"
+    },
+    {
+      "id": "z-11",
+      "value": 1,
+      "name": "z"
+    },
+    {
+      "id": "a-12",
+      "value": "3",
+      "name": "a"
+    },
+    {
+      "id": "asdf-13",
+      "value": "5",
+      "name": "asdf"
+    },
+    {
+      "id": "adsf-14",
+      "value": "2",
+      "name": "adsf"
+    },
+    {
+      "id": "asfd-15",
+      "value": "7",
+      "name": "asfd"
+    },
+    {
+      "id": "df-16",
+      "value": "2",
+      "name": "df"
+    }
+  ]
+}

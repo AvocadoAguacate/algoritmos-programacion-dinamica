@@ -1,0 +1,24 @@
+{
+  "nodeList": [
+    {
+      "id": "A-0",
+      "value": 1,
+      "name": "A"
+    },
+    {
+      "id": "B-1",
+      "value": "5",
+      "name": "B"
+    },
+    {
+      "id": "C-2",
+      "value": "2",
+      "name": "C"
+    },
+    {
+      "id": "D-3",
+      "value": "3",
+      "name": "D"
+    }
+  ]
+}
