@@ -13,6 +13,7 @@ import {
   CheckboxGroup, 
   Checkbox
 } from "@nextui-org/react";
+import Graph from "react-graph-vis";
 
 function OpticBinaryTree() {
   const [nodeName, setNodeName] = useState('');
@@ -22,7 +23,39 @@ function OpticBinaryTree() {
   const [tableA, setTableA] = useState([]);
   const [tableB, setTableB] = useState([]);
   const [showTable, setShowTable] = useState(false);
-  const [calcs, setCalcs] = useState([])
+  const [calcs, setCalcs] = useState([]);
+  const [edges, setEdges] = useState([]);
+  const [nodes, setNodes] = useState([]);
+
+  const options = {
+    layout: {
+      hierarchical: {
+        direction: 'UD',  // Dirección de la jerarquía: de arriba a abajo (Up-Down)
+        sortMethod: 'directed'  // Método de ordenación de la jerarquía
+      }
+    },
+    edges: {
+      color: "white",
+      smooth: {
+        type: 'dynamic',
+      },
+      font: {
+        color: "blue" // Cambia el color del label a blanco
+      }
+    },
+    physics: {
+      hierarchicalRepulsion: {
+        nodeDistance: 200, // Ajusta esta distancia según sea necesario
+      },
+      minVelocity: 0.75,
+    }
+  };
+
+  const events = {
+    select: function(event) {
+      var { nodes, edges } = event;
+    }
+  };
 
   const fileInputRef = useRef(null);
 
@@ -39,7 +72,16 @@ function OpticBinaryTree() {
       value: nodeWeight,
       name: nodeName
     };
-    setNodeList([...nodeList, newNode]);
+    const updatedNodeList = [...nodeList, newNode].sort((a, b) => {
+      if (a.name < b.name) {
+        return -1;
+      }
+      if (a.name > b.name) {
+        return 1;
+      }
+      return 0;
+    });
+    setNodeList(updatedNodeList);
     setNodeWeight(1);
     setNodeName('');
     setShowTable(false);
@@ -158,13 +200,40 @@ function OpticBinaryTree() {
         rFinal = k;
       }
       newCalc.push(`k=${k}`);
-      newCalc.push(`${temptableA[1][k-1]} + ${temptableA[k+1][objetive-1]} + ${1} = ${aux}`);
+      newCalc.push(`${temptableA[1][k-1].toFixed(3)} + ${temptableA[k+1][objetive-1].toFixed(3)} + ${1} = ${aux.toFixed(3)}`);
     }
     temptableA[1][objetive-1]= parseFloat(minFinal.toFixed(3));
     temptableR[1][objetive-1]= rFinal;
     setTableA(temptableA);
     setTableB(temptableR);
     setCalcs(newCalc);
+    //calcular el grafo
+    let todoList = [{from:1, to: nodeList.length}];
+    let tempNodes = [];
+    let tempEdges = [];
+    while(todoList.length > 0){
+      let todo = todoList.pop();
+      let root = temptableR[todo.from][todo.to + 1];
+      let nodeData = nodeList[root - 1]; 
+      // let newNode = {label: `${nodeData.name}(${root - 1})`, id: nodeData.id};
+      let newNode = {label: nodeData.name, id: nodeData.id};
+      tempNodes.push(newNode);
+      //agregar todo izq
+      if(root -1 >= todo.from){
+        todoList.push({from: todo.from, to: root - 1, parent: newNode});
+      }
+      //agregar todo der
+      if(root + 1 <=todo.to){
+        todoList.push({from: root + 1, to: todo.to, parent: newNode});
+      }
+      //agregar edges en caso de no ser el root inicial
+      if(todo.parent){
+        let newEdge = {from: todo.parent.id, to: newNode.id};
+        tempEdges.push(newEdge);
+      }
+    }
+    setEdges(tempEdges);
+    setNodes(tempNodes);
     setTimeout(() => {
       setShowTable(true);
     }, 500);
@@ -248,6 +317,23 @@ function OpticBinaryTree() {
             Calcular
           </Button>
       </div>
+      <div>
+        <Table className="text-black" isStriped>
+          <TableHeader>
+            <TableColumn>Nombre</TableColumn>
+            <TableColumn>Peso</TableColumn>
+            <TableColumn>Llave</TableColumn>
+          </TableHeader>
+          <TableBody>
+            {nodeList.map((node, index) => 
+            <TableRow key={index}>
+              <TableCell>{node.name}</TableCell>
+              <TableCell>{node.value}</TableCell>
+              <TableCell>{index + 1}</TableCell>
+            </TableRow>)}
+          </TableBody>
+        </Table>
+      </div>
       {showTable && (
         <div id="tablas">
           <div className="mr-4">
@@ -255,7 +341,7 @@ function OpticBinaryTree() {
             id="titulo_inputs_iniciales"
             className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400">
             Tabla A</h1>
-            <Table hideHeader aria-label="TableA" className="text-black">
+            <Table hideHeader aria-label="TableA" className="text-black" isStriped>
               <TableHeader>
                 {generateTableColumns()}
               </TableHeader>
@@ -275,7 +361,7 @@ function OpticBinaryTree() {
             id="titulo_inputs_iniciales"
             className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400">
             Tabla R</h1>
-            <Table hideHeader aria-label="TableR" className="text-black">
+            <Table hideHeader aria-label="TableR" className="text-black" isStriped>
               <TableHeader>
                   {generateTableColumns()}
               </TableHeader>
@@ -290,6 +376,16 @@ function OpticBinaryTree() {
               </TableBody>
             </Table>
           </div>
+        </div>
+      )}
+      { showTable && (
+        <div>
+        <Graph
+          graph={{nodes: nodes, edges: edges}}
+          options={options}
+          events={events}
+          style={{ height: "500px" }}
+          />
         </div>
       )}
       {/* {showTable && (

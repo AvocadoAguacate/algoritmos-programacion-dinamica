@@ -1,0 +1,54 @@
+{
+  "nodeList": [
+    {
+      "id": "Aldo-0",
+      "value": "10",
+      "name": "Aldo"
+    },
+    {
+      "id": "Bernie-9",
+      "value": "15",
+      "name": "Bernie"
+    },
+    {
+      "id": "Bio-7",
+      "value": "25",
+      "name": "Bio"
+    },
+    {
+      "id": "Cero-8",
+      "value": "5",
+      "name": "Cero"
+    },
+    {
+      "id": "Milei-3",
+      "value": "10",
+      "name": "Milei"
+    },
+    {
+      "id": "Rio-2",
+      "value": "5",
+      "name": "Rio"
+    },
+    {
+      "id": "Taty-5",
+      "value": "15",
+      "name": "Taty"
+    },
+    {
+      "id": "Tete-6",
+      "value": "25",
+      "name": "Tete"
+    },
+    {
+      "id": "Villy-4",
+      "value": "5",
+      "name": "Villy"
+    },
+    {
+      "id": "Zoro-1",
+      "value": "20",
+      "name": "Zoro"
+    }
+  ]
+}

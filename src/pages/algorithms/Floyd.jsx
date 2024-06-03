@@ -27,7 +27,10 @@ function Floyd() {
   const [resultsD, setResultsD] = useState([]);
   const [resultsP, setResultsP] = useState([]);
   const [showTable, setShowTable] = useState(false);
-  const [showTableCounter, setshowTableCounter] = useState(0)
+  const [showTableCounter, setshowTableCounter] = useState(0);
+  const [shortRoutes, setShortRoutes] = useState([]);
+  const [showShortRoutes, setShowShortRoutes] = useState(false);
+  const [addRandom, setAddRandom] = useState(true);
 
   const fileInputRef = useRef(null);
 
@@ -71,6 +74,15 @@ function Floyd() {
     setNodeNumber(event.target.value);
   };
 
+  const indexToLetters = (index) => {
+    let letters = '';
+    while (index >= 0) {
+      letters = String.fromCharCode(index % 26 + 65) + letters;
+      index = Math.floor(index / 26) - 1;
+    }
+    return letters;
+  }
+
   const addNode = () => {
     setShowGraph(false);
     if (nodeName.trim() !== "") {
@@ -95,8 +107,8 @@ function Floyd() {
     setNodeList(prevNodeList => {
       const len = prevNodeList.length;
       const newNodes = Array.from({ length: count }, (_, i) => ({
-        label: `node${len + i}`,
-        id: `node${len + i}-${len + i}`
+        label: indexToLetters(i),
+        id: `${indexToLetters(i)}-${len + i}`
       }));
       return [...prevNodeList, ...newNodes];
     });
@@ -107,6 +119,31 @@ function Floyd() {
       setShowGraph(true);
     }, 250);
   };
+
+  const addRandomNodes = () => {
+    setShowGraph(false);
+    let newEdges = [];
+    let m = nodeList.length > 20 ? nodeList.length/4 : nodeList.length; //30...
+    nodeList.forEach((node, index) => {
+      let n = Math.floor(Math.random() * m); //cantidad de posibles conexiones
+      let usedTo = [];
+      for (let i = 0; i < n; i++) {
+        let to = Math.floor(Math.random() * nodeList.length);
+        let weight = Math.floor(Math.random() * 100);
+        let newEdge = { from: node.id, to: nodeList[to].id, label: weight.toString()};
+        if(to !== index && usedTo.findIndex(element => element === to) === -1){
+          newEdges.push(newEdge);
+          usedTo.push(to);
+        }
+      }
+    });
+    setEdges([...edges, ...newEdges]);
+    setShowTable(false);
+    setAddRandom(false);
+    setTimeout(() => {
+      setShowGraph(true);
+    }, 250);
+  }
 
   const addEdge = () => {
     setShowGraph(false);
@@ -163,6 +200,8 @@ function Floyd() {
 
   const loadData = (event) => {
     setShowGraph(false);
+    setShowTable(false);
+    setShowShortRoutes(false);
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -177,6 +216,17 @@ function Floyd() {
       setShowGraph(true);
     }, 250);
   };
+
+  const shortRouter = (objective) => {
+    let isDirect = objective.pathMatrix[objective.from][objective.to];
+    if(isDirect === 0){
+      return '';
+    } else {
+      let leftTodo = {from: objective.from, to: isDirect-1, pathMatrix:objective.pathMatrix};
+      let rightTodo = {from: isDirect-1, to: objective.to, pathMatrix:objective.pathMatrix};
+      return `${shortRouter(leftTodo)}(${nodeList[isDirect-1].label})${shortRouter(rightTodo)}`;
+    }
+  }
 
   const resolve = () => {
     const size = nodeList.length;
@@ -224,13 +274,39 @@ function Floyd() {
       distanceMatrix = newDistanceMatrix; // Actualizar la matriz para la siguiente iteración
       pathMatrix = newPathMatrix; 
     }
+    //short routes
+    let todoList = [];
+    nodeList.forEach((from, fromIndex) => {
+      nodeList.forEach((to, toIndex) => {
+        if(to.id !== from.id){
+          let todo = {from: {name: from.label, index: fromIndex},
+            to: {name: to.label, index: toIndex}};
+            todoList.push(todo);
+        }
+      });
+    });
+    let routes = [];
+    todoList.forEach((todo, index) => {
+      let isDirect = pathMatrix[todo.from.index][todo.to.index];
+      let shortRoute = '';
+      if(isDirect === 0){
+        shortRoute = `${todo.from.name} > ${todo.to.name} (Ruta directa)`;
+      } else{
+        let leftTodo = {from: todo.from.index, to: isDirect-1, pathMatrix:pathMatrix};//node index !== iteration 
+        let rightTodo = {from: isDirect-1, to: todo.to.index, pathMatrix:pathMatrix};
+        shortRoute = `${todo.from.name} > ${todo.to.name} =  (${todo.from.name})${shortRouter(leftTodo)}(${nodeList[isDirect-1].label})${shortRouter(rightTodo)}(${todo.to.name})`;
+        shortRoute = shortRoute.replace(/\)\(/g, '>');
+      }
+      routes.push(shortRoute);
+    });
+    setShortRoutes(routes);
     setTimeout(() => {
       setShowTable(true);
     }, 1000);
   }
 
   const showBestRoutes = () => {
-    alert('pendiente');
+    setShowShortRoutes(true);
   };
 
   return (
@@ -262,7 +338,7 @@ function Floyd() {
             onClick={addNode}
             className="bg-gradient-to-b from-red-400 to-red-900 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8"
           >
-            Agregar
+            Agregar Nodo
           </Button>
           <Input
             id="inp_nodeName"
@@ -281,7 +357,17 @@ function Floyd() {
             onClick={() => addNodes(nodeNumber)}
             className="bg-gradient-to-b from-red-400 to-red-900 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8"
           >
-            Agregar
+            Agregar Nodos
+          </Button>
+          <Button
+            id="btn_set_values"
+            radius="full"
+            fullWidth
+            onClick={addRandomNodes}
+            isDisabled={nodeList.length < 3 || !addRandom}
+            className="bg-gradient-to-b from-red-400 to-red-900 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8"
+          >
+            Agregar Conexiones 
           </Button>
         </div>  
       </div>
@@ -387,7 +473,7 @@ function Floyd() {
           </Button>
       </div>
       {showGraph && (
-        <div id="graph" className="flex mb-6">
+        <div id="graph">
         <Graph
         graph={{nodes: nodeList, edges: edges}}
         options={options}
@@ -450,13 +536,29 @@ function Floyd() {
       )}
       </div>
       </div>
-      {showTable && (
+      {showTable && !showShortRoutes && (
+        <div className="mt-6 flex w-full flex-wrap md:flex-nowrap  items-center">
         <Button
-      onClick={showBestRoutes}>
-        Mostrar mejores rutas
-      </Button>
+        className="bg-gradient-to-b from-purple-600 to-blue-600 text-white shadow-lg font-mono tracking-wider text-lg font-semibold w-full mx-8 mt-8"
+        onClick={showBestRoutes}>
+          Mostrar mejores rutas
+        </Button>
+        </div>
       )}
-      
+      {showShortRoutes && (
+          <div>
+            <h1
+            id="titulo_inputs_iniciales"
+            className=" mx-8 mt-4 font-mono text-3xl font-extrabold dark:text-white tracking-wider text-lime-400">
+            Mejores rutas</h1>
+            {shortRoutes.map((calc, index) => 
+              <h2 className="mx-8 mt-4 font-mono text-xl" 
+              key={index}>
+                {calc}
+              </h2>
+            )}
+          </div>
+        )}
     </div>
   );
 }

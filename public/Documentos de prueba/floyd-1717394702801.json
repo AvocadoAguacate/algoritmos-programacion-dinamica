@@ -1,0 +1,114 @@
+{
+  "nodes": [
+    {
+      "label": "San José",
+      "id": "San José-0"
+    },
+    {
+      "label": "Cartago",
+      "id": "Cartago-1"
+    },
+    {
+      "label": "Heredia",
+      "id": "Heredia-2"
+    },
+    {
+      "label": "Limón",
+      "id": "Limón-3"
+    },
+    {
+      "label": "Guanacaste",
+      "id": "Guanacaste-4"
+    },
+    {
+      "label": "Alajuela",
+      "id": "Alajuela-5"
+    }
+  ],
+  "edges": [
+    {
+      "from": "San José-0",
+      "to": "Cartago-1",
+      "label": "3",
+      "title": "De San José-0 a Cartago-1 son 3",
+      "id": "8c266306-8301-44ed-9460-0e5beb7d5228"
+    },
+    {
+      "from": "Heredia-2",
+      "to": "Cartago-1",
+      "label": "4",
+      "title": "De Heredia-2 a Cartago-1 son 4",
+      "id": "901489b2-689a-4b1e-ae24-8ba048daf650"
+    },
+    {
+      "from": "Limón-3",
+      "to": "Cartago-1",
+      "label": "3",
+      "title": "De Limón-3 a Cartago-1 son 3",
+      "id": "6de7d988-beaf-448a-9bec-2586f8870887"
+    },
+    {
+      "from": "Guanacaste-4",
+      "to": "Cartago-1",
+      "label": "5",
+      "title": "De Guanacaste-4 a Cartago-1 son 5",
+      "id": "a89c3dca-6fc8-4a0e-a147-7c627b4dee4c"
+    },
+    {
+      "from": "Alajuela-5",
+      "to": "Cartago-1",
+      "label": "3",
+      "title": "De Alajuela-5 a Cartago-1 son 3",
+      "id": "d1268e1a-75ae-4b93-b62b-2a7bfddce488"
+    },
+    {
+      "from": "Cartago-1",
+      "to": "San José-0",
+      "label": "1",
+      "title": "De Cartago-1 a San José-0 son 1",
+      "id": "5f48d307-f11b-4584-822d-ee15e37d082a"
+    },
+    {
+      "from": "Cartago-1",
+      "to": "Heredia-2",
+      "label": "2",
+      "title": "De Cartago-1 a Heredia-2 son 2",
+      "id": "7e114356-a8a3-4433-8bb0-9741dc2aa076"
+    },
+    {
+      "from": "Cartago-1",
+      "to": "Guanacaste-4",
+      "label": "5",
+      "title": "De Cartago-1 a Guanacaste-4 son 5",
+      "id": "ebacbfea-77a9-4a83-9c99-9c2a1f64fd4e"
+    },
+    {
+      "from": "Heredia-2",
+      "to": "Guanacaste-4",
+      "label": "2",
+      "title": "De Heredia-2 a Guanacaste-4 son 2",
+      "id": "f47f07f5-1417-41bb-9a05-271aea0809a2"
+    },
+    {
+      "from": "Limón-3",
+      "to": "San José-0",
+      "label": "2",
+      "title": "De Limón-3 a San José-0 son 2",
+      "id": "f9a60d0d-e47e-40d2-896e-166e03032451"
+    },
+    {
+      "from": "Heredia-2",
+      "to": "Alajuela-5",
+      "label": "5",
+      "title": "De Heredia-2 a Alajuela-5 son 5",
+      "id": "38fc5787-79cc-44da-b07e-5c98e72158ea"
+    },
+    {
+      "from": "Guanacaste-4",
+      "to": "Limón-3",
+      "label": "10",
+      "title": "De Guanacaste-4 a Limón-3 son 10",
+      "id": "18042d5e-0465-48e6-be05-00bd50d5021f"
+    }
+  ]
+}
