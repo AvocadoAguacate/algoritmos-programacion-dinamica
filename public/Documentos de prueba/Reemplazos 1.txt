@@ -1,7 +1,7 @@
 {
   "initialCost": 500,
-  "projectTime": 3,
-  "vida_util": 10,
+  "projectTime": 5,
+  "vida_util": 3,
   "maintenanceData": [
     { "year": 1, "maintenance": 30, "sales": 400 },
     { "year": 2, "maintenance": 40, "sales": 300 },
